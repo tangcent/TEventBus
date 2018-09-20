@@ -6,7 +6,7 @@ import java.text.Normalizer;
 import java.util.*;
 import java.util.regex.Pattern;
 
-public class StringUtils {
+public final class StringUtils {
 
     /**
      * A String for a space character.

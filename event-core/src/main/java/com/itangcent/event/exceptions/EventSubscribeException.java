@@ -5,7 +5,7 @@ public class EventSubscribeException extends EventException {
         super(message, cause);
     }
 
-    public EventSubscribeException(String message) {
-        super(message);
+    public EventSubscribeException(Throwable cause) {
+        super(cause);
     }
 }

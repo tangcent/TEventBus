@@ -5,5 +5,5 @@ public interface SubscriberExceptionHandler {
     /**
      * Handles exceptions thrown by subscribers.
      */
-    void handleException(Throwable exception, SubscriberContext context);
+    void handleException(Throwable exception, SubscriberExceptionContext context);
 }

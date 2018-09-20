@@ -1,7 +1,8 @@
 package com.itangcent.event.utils;
 
 import java.util.*;
-import java.util.function.Predicate;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class Collections {
 
@@ -29,5 +30,9 @@ public class Collections {
         final HashMap<K, V> map = new HashMap<>();
         map.put(k, v);
         return map;
+    }
+
+    public static <K, V> ConcurrentMap<K, V> newConcurrentMap() {
+        return new ConcurrentHashMap<>();
     }
 }

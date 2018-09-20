@@ -2,7 +2,7 @@ package com.itangcent.event.utils;
 
 import java.lang.reflect.Array;
 
-public class ArrayUtils {
+public final class ArrayUtils {
     /**
      * <p>Checks if an array of Objects is empty or {@code null}.
      *

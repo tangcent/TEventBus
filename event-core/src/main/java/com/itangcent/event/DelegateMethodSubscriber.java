@@ -1,11 +1,11 @@
 package com.itangcent.event;
 
-import com.itangcent.event.exceptions.EventException;
 import com.itangcent.event.exceptions.EventSubscribeException;
 import com.itangcent.event.utils.ReflectionUtils;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.text.MessageFormat;
+import java.util.Objects;
 
 public class DelegateMethodSubscriber implements Subscriber {
 
@@ -19,17 +19,25 @@ public class DelegateMethodSubscriber implements Subscriber {
         this.delegate = delegate;
         this.method = method;
         this.eventType = eventType;
+        ReflectionUtils.makeAccessible(method);
     }
 
     @Override
     public void onSubscribe(Object event) {
         try {
             method.invoke(delegate, event);
-        } catch (EventException e) {
-            throw e;
+        } catch (InvocationTargetException e) {
+            warp(e.getCause());
         } catch (Throwable ex) {
-            throw new EventSubscribeException(MessageFormat.format("Failed to invoke target method ''{0}'' with arguments {1}",
-                    ReflectionUtils.buildKey(delegate, method), event), ex);
+            warp(ex);
+        }
+    }
+
+    private void warp(Throwable ex) {
+        if (ex instanceof RuntimeException) {
+            throw (RuntimeException) ex;
+        } else {
+            throw new EventSubscribeException(ex);
         }
     }
 
@@ -38,4 +46,18 @@ public class DelegateMethodSubscriber implements Subscriber {
         return method;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DelegateMethodSubscriber that = (DelegateMethodSubscriber) o;
+        return Objects.equals(delegate, that.delegate) &&
+                Objects.equals(method, that.method) &&
+                Objects.equals(eventType, that.eventType);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(delegate, method, eventType);
+    }
 }

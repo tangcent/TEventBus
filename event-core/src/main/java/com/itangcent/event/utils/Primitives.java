@@ -3,7 +3,7 @@ package com.itangcent.event.utils;
 import java.util.Collections;
 import java.util.*;
 
-public class Primitives {
+public final class Primitives {
 
     private Primitives() {
     }

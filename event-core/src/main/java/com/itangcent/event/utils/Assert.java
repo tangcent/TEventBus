@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Objects;
 
 @SuppressWarnings("rawtypes")
-public class Assert {
+public final class Assert {
 
     public static void isTrue(boolean expression, String message) {
         if (!expression) {

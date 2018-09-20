@@ -1,22 +1,8 @@
 package com.itangcent.event;
 
-import java.util.Iterator;
-
-public class DefaultSubscriberRegistry implements SubscriberRegistry {
-
-
+public class DefaultSubscriberRegistry extends AbstractSubscriberRegistry {
     @Override
-    public void register(Object subscriber) {
-
-    }
-
-    @Override
-    public void unregister(Object subscriber) {
-
-    }
-
-    @Override
-    public Iterator<Subscriber> getSubscribers(Object event) {
-        return null;
+    protected Subscriber buildSubscriber(Object subscriber, SubscriberMethod subscriberMethod) {
+        return new DelegateMethodSubscriber(subscriber, subscriberMethod.getMethod(), subscriberMethod.getEventType());
     }
 }
