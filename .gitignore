@@ -101,3 +101,5 @@ fabric.properties
 
 
 \.idea/
+
+event-core/event-core\.iml
