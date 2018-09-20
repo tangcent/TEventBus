@@ -10,7 +10,25 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.itangcent</groupId>
-    <artifactId>event-core</artifactId>
+    <artifactId>event-local</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.itangcent</groupId>
+            <artifactId>event-core</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.3.1</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
 
     <build>
         <plugins>
