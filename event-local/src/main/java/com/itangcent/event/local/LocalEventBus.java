@@ -2,6 +2,8 @@ package com.itangcent.event.local;
 
 import com.itangcent.event.*;
 
+import java.util.concurrent.ExecutorService;
+
 public class LocalEventBus extends AbstractEventBus {
     private SubscriberRegistry subscriberRegistry;
     private Dispatcher dispatcher;
@@ -11,6 +13,11 @@ public class LocalEventBus extends AbstractEventBus {
     public LocalEventBus() {
         subscriberRegistry = new DefaultSubscriberRegistry();
         dispatcher = ImmediateDispatcher.instance();
+    }
+
+    public LocalEventBus(ExecutorService executorService) {
+        subscriberRegistry = new DefaultSubscriberRegistry();
+        dispatcher = new ExecutorDispatcher(executorService);
     }
 
     @Override

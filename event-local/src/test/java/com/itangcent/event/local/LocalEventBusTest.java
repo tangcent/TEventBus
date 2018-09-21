@@ -1,16 +1,17 @@
 package com.itangcent.event.local;
 
-import com.itangcent.event.SubscriberExceptionContext;
-import com.itangcent.event.SubscriberExceptionHandler;
 import com.itangcent.event.annotation.Retry;
 import com.itangcent.event.annotation.Subscribe;
 import org.junit.jupiter.api.Test;
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class LocalEventBusTest {
 
     @Test
     void test() {
-        LocalEventBus localEventBus = new LocalEventBus();
+        LocalEventBus localEventBus = new LocalEventBus(Executors.newFixedThreadPool(2));
         localEventBus.setSubscriberExceptionHandler((exception, context) -> System.out.println("handle:[" + exception.getMessage() + "]"));
         Subscriber subscriber = new Subscriber();
         localEventBus.register(subscriber);
@@ -23,7 +24,7 @@ public class LocalEventBusTest {
 
     private class Subscriber {
 
-        int i = 0;
+        AtomicInteger i = new AtomicInteger(0);
 
         @Subscribe
         private void listenUser(String name) {
@@ -33,7 +34,7 @@ public class LocalEventBusTest {
         @Retry(times = 3)
         @Subscribe(topic = "newUser")
         private void listenNewUser(String name) {
-            if (i++ < 2) {
+            if (i.getAndIncrement() < 3) {
                 throw new IllegalArgumentException("error hello new user:" + name);
             }
             System.out.println("hello " + name + "， welcome here");
@@ -42,7 +43,7 @@ public class LocalEventBusTest {
         @Retry(times = 3)
         @Subscribe(topic = "oldUser")
         private void listenOldUser(String name) {
-            if (i++ < 2) {
+            if (i.getAndIncrement() < 3) {
                 throw new IllegalArgumentException("error hello old user:" + name);
             }
             System.out.println("hello " + name + "， welcome back");
