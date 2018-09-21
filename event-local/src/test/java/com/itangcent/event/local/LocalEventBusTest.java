@@ -11,12 +11,7 @@ public class LocalEventBusTest {
     @Test
     void test() {
         LocalEventBus localEventBus = new LocalEventBus();
-        localEventBus.setSubscriberExceptionHandler(new SubscriberExceptionHandler() {
-            @Override
-            public void handleException(Throwable exception, SubscriberExceptionContext context) {
-                System.out.println("handle:[" + exception.getMessage() + "]");
-            }
-        });
+        localEventBus.setSubscriberExceptionHandler((exception, context) -> System.out.println("handle:[" + exception.getMessage() + "]"));
         Subscriber subscriber = new Subscriber();
         localEventBus.register(subscriber);
         localEventBus.post("world", "newUser");
@@ -48,7 +43,7 @@ public class LocalEventBusTest {
         @Subscribe(topic = "oldUser")
         private void listenOldUser(String name) {
             if (i++ < 2) {
-                throw new IllegalArgumentException("error hello new user:" + name);
+                throw new IllegalArgumentException("error hello old user:" + name);
             }
             System.out.println("hello " + name + "， welcome back");
         }
