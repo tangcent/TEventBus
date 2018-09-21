@@ -1,11 +1,11 @@
 package com.itangcent.event;
 
-import com.itangcent.event.exceptions.EventSubscribeException;
 import com.itangcent.event.utils.ExceptionUtils;
 import com.itangcent.event.utils.ReflectionUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.text.MessageFormat;
 import java.util.Objects;
 
 public class DelegateMethodSubscriber implements Subscriber {
@@ -52,5 +52,11 @@ public class DelegateMethodSubscriber implements Subscriber {
     @Override
     public int hashCode() {
         return Objects.hash(delegate, method, eventType);
+    }
+
+    @Override
+    public String toString() {
+        return MessageFormat.format("{0}'{'delegate={1}, method={2}, eventType={3}'}'",
+                getClass().getSimpleName(), delegate, ReflectionUtils.buildMethod(method), eventType);
     }
 }

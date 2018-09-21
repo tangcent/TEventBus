@@ -1,10 +1,13 @@
 package com.itangcent.event.local;
 
+import com.itangcent.event.LoggedEventExceptionHandle;
 import com.itangcent.event.annotation.Retry;
 import com.itangcent.event.annotation.Subscribe;
+import com.itangcent.event.utils.Runs;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class LocalEventBusTest {
@@ -12,7 +15,7 @@ public class LocalEventBusTest {
     @Test
     void test() {
         LocalEventBus localEventBus = new LocalEventBus(Executors.newFixedThreadPool(2));
-        localEventBus.setSubscriberExceptionHandler((exception, context) -> System.out.println("handle:[" + exception.getMessage() + "]"));
+        localEventBus.setSubscriberExceptionHandler(LoggedEventExceptionHandle.message());
         Subscriber subscriber = new Subscriber();
         localEventBus.register(subscriber);
         localEventBus.post("world", "newUser");
@@ -20,6 +23,7 @@ public class LocalEventBusTest {
         localEventBus.post("Louis");
         localEventBus.unregister(subscriber);
         localEventBus.post("Emily");
+        Runs.uncheckDo(() -> Thread.sleep(TimeUnit.SECONDS.toMillis(1)));
     }
 
     private class Subscriber {
