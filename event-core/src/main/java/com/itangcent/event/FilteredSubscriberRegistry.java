@@ -9,7 +9,7 @@ import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-public abstract class AbstractFilteredSubscriberRegistry extends AbstractSubscriberRegistry {
+public class FilteredSubscriberRegistry extends AbstractSubscriberRegistry {
 
     @Override
     public Collection<Subscriber> getSubscribers(EventBus eventBus, Object event) {

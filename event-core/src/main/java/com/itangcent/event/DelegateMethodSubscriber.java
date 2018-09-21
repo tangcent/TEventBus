@@ -16,17 +16,23 @@ public class DelegateMethodSubscriber implements Subscriber {
 
     private Class eventType;
 
+    private MethodInvoker methodInvoker;
+
     public DelegateMethodSubscriber(Object delegate, Method method, Class eventType) {
         this.delegate = delegate;
         this.method = method;
         this.eventType = eventType;
-        ReflectionUtils.makeAccessible(method);
+        methodInvoker = invokerOf(method);
     }
 
     @Override
     public void onSubscribe(Object event) {
         try {
-            method.invoke(delegate, event);
+            if (event instanceof TopicEvent) {
+                methodInvoker.invoke(((TopicEvent) event).getEvent(), ((TopicEvent) event).getTopic());
+            } else {
+                methodInvoker.invoke(event, null);
+            }
         } catch (InvocationTargetException e) {
             ExceptionUtils.wrapAndThrow(e.getCause());
         } catch (Throwable ex) {
@@ -58,5 +64,32 @@ public class DelegateMethodSubscriber implements Subscriber {
     public String toString() {
         return MessageFormat.format("{0}'{'delegate={1}, method={2}, eventType={3}'}'",
                 getClass().getSimpleName(), delegate, ReflectionUtils.buildMethod(method), eventType);
+    }
+
+    private MethodInvoker invokerOf(Method method) {
+        ReflectionUtils.makeAccessible(method);
+        if (method.getParameterCount() == 1) {
+            return new SingleMethodInvoker();
+        } else {
+            return new TopicedMethodInvoker();
+        }
+    }
+
+    private interface MethodInvoker {
+        void invoke(Object event, String topic) throws InvocationTargetException, IllegalAccessException;
+    }
+
+    private class SingleMethodInvoker implements MethodInvoker {
+
+        public void invoke(Object event, String topic) throws InvocationTargetException, IllegalAccessException {
+            method.invoke(delegate, event);
+        }
+    }
+
+    private class TopicedMethodInvoker implements MethodInvoker {
+
+        public void invoke(Object event, String topic) throws InvocationTargetException, IllegalAccessException {
+            method.invoke(delegate, event, topic);
+        }
     }
 }

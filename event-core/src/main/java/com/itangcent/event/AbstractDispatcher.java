@@ -7,11 +7,7 @@ import java.util.Collection;
 public abstract class AbstractDispatcher implements Dispatcher {
     @Override
     public void dispatch(Object event, Collection<Subscriber> subscribers, SubscriberExceptionHandler subscriberExceptionHandler) {
-        if (event instanceof TopicEvent) {
-            dispatchEvents(((TopicEvent) event).getEvent(), subscribers, subscriberExceptionHandler);
-        } else {
-            dispatchEvents(event, subscribers, subscriberExceptionHandler);
-        }
+        dispatchEvents(event, subscribers, subscriberExceptionHandler);
     }
 
     protected abstract void dispatchEvents(Object event, Collection<Subscriber> subscribers, SubscriberExceptionHandler subscriberExceptionHandler);

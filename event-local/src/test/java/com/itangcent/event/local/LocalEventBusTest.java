@@ -31,8 +31,8 @@ public class LocalEventBusTest {
         AtomicInteger i = new AtomicInteger(0);
 
         @Subscribe
-        private void listenUser(String name) {
-            System.out.println(name + " login");
+        private void listenUser(String name, String topic) {
+            System.out.println(topic + " " + name + " login");
         }
 
         @Retry(times = 3)

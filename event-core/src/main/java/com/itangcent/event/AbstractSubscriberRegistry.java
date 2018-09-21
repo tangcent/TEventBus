@@ -103,7 +103,6 @@ public abstract class AbstractSubscriberRegistry implements SubscriberRegistry {
         for (Class<?> eventType : eventTypes) {
             CopyOnWriteArraySet<Subscriber> eventSubscribers = subscribers.get(eventType);
             if (eventSubscribers != null) {
-                // eager no-copy snapshot
                 subscriberList.addAll(eventSubscribers);
             }
         }
@@ -136,6 +135,7 @@ public abstract class AbstractSubscriberRegistry implements SubscriberRegistry {
      * Flattens a class's type hierarchy into a set of {@code Class} objects including all
      * superclasses (transitively) and all interfaces implemented by these superclasses.
      */
+    @SuppressWarnings("unchecked")
     static Collection<Class<?>> flattenHierarchy(Class<?> concreteClass) {
         Collection<Class<?>> collection = flattenHierarchyCache.get(concreteClass);
         if (collection == null) {

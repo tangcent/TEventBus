@@ -14,9 +14,7 @@ public class ExecutorDispatcher extends AbstractDispatcher {
     @Override
     protected void dispatchEvents(Object event, Collection<Subscriber> subscribers, SubscriberExceptionHandler subscriberExceptionHandler) {
         for (Subscriber subscriber : subscribers) {
-            executorService.submit(() -> {
-                dispatch(event, subscriber, subscriberExceptionHandler);
-            });
+            executorService.submit(() -> dispatch(event, subscriber, subscriberExceptionHandler));
         }
     }
 }

@@ -11,12 +11,12 @@ public class LocalEventBus extends AbstractEventBus {
     private String name = "LocalEventBus";
 
     public LocalEventBus() {
-        subscriberRegistry = new DefaultSubscriberRegistry();
+        subscriberRegistry = new FilteredSubscriberRegistry();
         dispatcher = ImmediateDispatcher.instance();
     }
 
     public LocalEventBus(ExecutorService executorService) {
-        subscriberRegistry = new DefaultSubscriberRegistry();
+        subscriberRegistry = new FilteredSubscriberRegistry();
         dispatcher = new ExecutorDispatcher(executorService);
     }
 
