@@ -6,28 +6,25 @@ import com.itangcent.event.utils.AnnotationUtils;
 import com.itangcent.event.utils.ArrayUtils;
 import com.itangcent.event.utils.Predicates;
 
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class DefaultSubscriberRegistry extends AbstractSubscriberRegistry {
-
     @Override
-    public Collection<Subscriber> getSubscribers(EventBus eventBus, Object event) {
+    public void findSubscribers(EventBus eventBus, Object event, Consumer<Subscriber> subscriberConsumer) {
         String topic = null;
         if (event instanceof TopicEvent) {
             topic = ((TopicEvent) event).getTopic();
             event = ((TopicEvent) event).getEvent();
         }
-        Collection<Subscriber> subscribers = super.getSubscribers(eventBus, event);
-        for (Iterator<Subscriber> iterator = subscribers.iterator(); iterator.hasNext(); ) {
-            Subscriber subscriber = iterator.next();
-            if (subscriber instanceof SubscriberFilter && !((SubscriberFilter) subscriber).canSubscribe(eventBus, topic, event)) {
-                iterator.remove();
+        String finalTopic = topic;
+        Object finalEvent = event;
+        super.findSubscribers(eventBus, event, subscriber -> {
+            if (!(subscriber instanceof SubscriberFilter) || ((SubscriberFilter) subscriber).canSubscribe(eventBus, finalTopic, finalEvent)) {
+                subscriberConsumer.accept(subscriber);
             }
-        }
-        return subscribers;
+        });
     }
 
     @Override

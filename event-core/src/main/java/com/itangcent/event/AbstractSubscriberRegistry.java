@@ -12,6 +12,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.function.Consumer;
 
 public abstract class AbstractSubscriberRegistry implements SubscriberRegistry {
     /**
@@ -63,9 +64,8 @@ public abstract class AbstractSubscriberRegistry implements SubscriberRegistry {
             CopyOnWriteArraySet<Subscriber> eventSubscribers = subscribers.get(eventType);
 
             if (eventSubscribers == null) {
-                CopyOnWriteArraySet<Subscriber> newSet = new CopyOnWriteArraySet<Subscriber>();
-                eventSubscribers =
-                        ObjectUtils.firstNonNull(subscribers.putIfAbsent(eventType, newSet), newSet);
+                CopyOnWriteArraySet<Subscriber> newSet = new CopyOnWriteArraySet<>();
+                eventSubscribers = ObjectUtils.firstNonNull(subscribers.putIfAbsent(eventType, newSet), newSet);
             }
 
             eventSubscribers.addAll(eventMethodsInListener);
@@ -96,20 +96,19 @@ public abstract class AbstractSubscriberRegistry implements SubscriberRegistry {
     }
 
     @Override
-    public Collection<Subscriber> getSubscribers(EventBus eventBus, Object event) {
+    public void findSubscribers(EventBus eventBus, Object event, Consumer<Subscriber> subscriberConsumer) {
 
         Collection<Class<?>> eventTypes = flattenHierarchy(event.getClass());
-
-        List<Subscriber> subscriberList = Collections.newArrayList();
 
         for (Class<?> eventType : eventTypes) {
             CopyOnWriteArraySet<Subscriber> eventSubscribers = subscribers.get(eventType);
             if (eventSubscribers != null) {
-                subscriberList.addAll(eventSubscribers);
+                for (Subscriber eventSubscriber : eventSubscribers) {
+                    subscriberConsumer.accept(eventSubscriber);
+                }
             }
         }
 
-        return subscriberList;
     }
 
     private Map<Class<?>, Collection<Subscriber>> findAllSubscribers(Object subscriber) {

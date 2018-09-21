@@ -9,7 +9,7 @@ import java.util.concurrent.Semaphore;
 public class ConcurrencySubscriber implements DelegateSubscriber {
     private Subscriber delegateSubscriber;
 
-    Semaphore semaphore;
+    private Semaphore semaphore;
 
     public ConcurrencySubscriber(Subscriber delegateSubscriber, int concurrency) {
         this.delegateSubscriber = delegateSubscriber;

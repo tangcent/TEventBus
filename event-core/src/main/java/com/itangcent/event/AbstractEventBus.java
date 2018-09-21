@@ -2,12 +2,9 @@ package com.itangcent.event;
 
 import com.itangcent.event.annotation.Retry;
 import com.itangcent.event.exceptions.EventFailedException;
-import com.itangcent.event.subscriber.Subscriber;
 import com.itangcent.event.utils.AnnotationUtils;
 import com.itangcent.event.utils.ObjectUtils;
 import com.itangcent.event.utils.RetryUtils;
-
-import java.util.Collection;
 
 public abstract class AbstractEventBus implements EventBus {
 
@@ -23,8 +20,10 @@ public abstract class AbstractEventBus implements EventBus {
 
     @Override
     public void post(Object event) {
-        Collection<Subscriber> subscribers = getSubscriberRegistry().getSubscribers(this, event);
-        getDispatcher().dispatch(event, subscribers, exceptionHandler);
+        Dispatcher dispatcher = getDispatcher();
+        getSubscriberRegistry().findSubscribers(this, event, subscriber -> {
+            dispatcher.dispatch(event, subscriber, exceptionHandler);
+        });
     }
 
     private BusSubscriberExceptionHandler exceptionHandler = new BusSubscriberExceptionHandler();
