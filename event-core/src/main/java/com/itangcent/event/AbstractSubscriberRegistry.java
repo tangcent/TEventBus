@@ -2,6 +2,8 @@ package com.itangcent.event;
 
 import com.itangcent.event.annotation.Subscribe;
 import com.itangcent.event.reflect.TypeToken;
+import com.itangcent.event.subscriber.DelegateMethodSubscriber;
+import com.itangcent.event.subscriber.Subscriber;
 import com.itangcent.event.utils.*;
 import com.itangcent.event.utils.Collections;
 
@@ -149,6 +151,8 @@ public abstract class AbstractSubscriberRegistry implements SubscriberRegistry {
     /**
      * todo:support
      */
-    protected abstract Subscriber buildSubscriber(Object subscriber, SubscriberMethod subscriberMethod);
+    protected Subscriber buildSubscriber(Object subscriber, SubscriberMethod subscriberMethod) {
+        return new DelegateMethodSubscriber(subscriber, subscriberMethod.getMethod(), subscriberMethod.getEventType());
+    }
 
 }

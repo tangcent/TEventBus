@@ -1,5 +1,6 @@
-package com.itangcent.event;
+package com.itangcent.event.subscriber;
 
+import com.itangcent.event.TopicEvent;
 import com.itangcent.event.utils.ExceptionUtils;
 import com.itangcent.event.utils.ReflectionUtils;
 

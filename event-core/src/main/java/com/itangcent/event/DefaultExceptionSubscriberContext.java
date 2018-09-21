@@ -1,5 +1,7 @@
 package com.itangcent.event;
 
+import com.itangcent.event.subscriber.Subscriber;
+
 public class DefaultExceptionSubscriberContext extends DefaultSubscriberContext implements SubscriberExceptionContext {
     private int times = 0;
 

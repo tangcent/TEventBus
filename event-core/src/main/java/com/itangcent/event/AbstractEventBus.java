@@ -2,6 +2,7 @@ package com.itangcent.event;
 
 import com.itangcent.event.annotation.Retry;
 import com.itangcent.event.exceptions.EventFailedException;
+import com.itangcent.event.subscriber.Subscriber;
 import com.itangcent.event.utils.AnnotationUtils;
 import com.itangcent.event.utils.ObjectUtils;
 import com.itangcent.event.utils.RetryUtils;

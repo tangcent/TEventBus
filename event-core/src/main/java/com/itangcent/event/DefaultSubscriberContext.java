@@ -1,5 +1,7 @@
 package com.itangcent.event;
 
+import com.itangcent.event.subscriber.Subscriber;
+
 public class DefaultSubscriberContext implements SubscriberContext {
     private Object event;
     private Subscriber subscriber;

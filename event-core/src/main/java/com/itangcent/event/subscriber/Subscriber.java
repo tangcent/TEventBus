@@ -1,4 +1,4 @@
-package com.itangcent.event;
+package com.itangcent.event.subscriber;
 
 import java.lang.reflect.Method;
 

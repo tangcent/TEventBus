@@ -6,51 +6,72 @@ import com.itangcent.event.annotation.Subscribe;
 import com.itangcent.event.utils.Runs;
 import org.junit.jupiter.api.Test;
 
+import java.text.MessageFormat;
+import java.util.Random;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class LocalEventBusTest {
 
+    public static final String[] oldUsers = new String[]{"Tom", "William", "Wilbert", "David", "Sofia"};
+    public static final String[] newUsers = new String[]{"Louis", "Lily", "Taylor", "Jake", "Gavin"};
+
     @Test
     void test() {
-        LocalEventBus localEventBus = new LocalEventBus(Executors.newFixedThreadPool(2));
+
+        LocalEventBus localEventBus = new LocalEventBus(Executors.newFixedThreadPool(4));
         localEventBus.setSubscriberExceptionHandler(LoggedEventExceptionHandle.message());
         Subscriber subscriber = new Subscriber();
         localEventBus.register(subscriber);
         localEventBus.post("world", "newUser");
-        localEventBus.post("Tom", "oldUser");
-        localEventBus.post("Louis");
+        for (String oldUser : oldUsers) {
+            localEventBus.post(oldUser, "oldUser");
+        }
+        for (String newUser : newUsers) {
+            localEventBus.post(newUser, "newUser");
+        }
+        localEventBus.post("Jeremiah");
         localEventBus.unregister(subscriber);
         localEventBus.post("Emily");
-        Runs.uncheckDo(() -> Thread.sleep(TimeUnit.SECONDS.toMillis(1)));
+        Runs.uncheckDo(() -> Thread.sleep(TimeUnit.SECONDS.toMillis(10)));
     }
 
     private class Subscriber {
 
+        Random random = new Random(System.currentTimeMillis());
+
         AtomicInteger i = new AtomicInteger(0);
+        AtomicInteger newUserCount = new AtomicInteger(0);
+        AtomicInteger oldUserCount = new AtomicInteger(0);
 
         @Subscribe
         private void listenUser(String name, String topic) {
-            System.out.println(topic + " " + name + " login");
+            System.out.println(MessageFormat.format("[{0}]{1} {2} login", i.getAndIncrement(), topic, name));
         }
 
         @Retry(times = 3)
-        @Subscribe(topic = "newUser")
+        @Subscribe(topic = "newUser", concurrency = 2)
         private void listenNewUser(String name) {
-            if (i.getAndIncrement() < 3) {
+            if (random.nextBoolean()) {
                 throw new IllegalArgumentException("error hello new user:" + name);
             }
-            System.out.println("hello " + name + "， welcome here");
+            System.out.println(MessageFormat.format("[{0}]hello {1}， welcome here", newUserCount.incrementAndGet(), name));
+            Runs.uncheckDo(() -> Thread.sleep(TimeUnit.MILLISECONDS.toMillis(500)));
+            newUserCount.decrementAndGet();
         }
 
         @Retry(times = 3)
-        @Subscribe(topic = "oldUser")
+        @Subscribe(topic = "oldUser", concurrency = 3)
         private void listenOldUser(String name) {
-            if (i.getAndIncrement() < 3) {
+            if (random.nextBoolean()) {
                 throw new IllegalArgumentException("error hello old user:" + name);
             }
-            System.out.println("hello " + name + "， welcome back");
+            System.out.println(MessageFormat.format("[{0}]hello {1}， welcome back", oldUserCount.incrementAndGet(), name));
+            Runs.uncheckDo(() -> Thread.sleep(TimeUnit.MILLISECONDS.toMillis(500)));
+            oldUserCount.decrementAndGet();
         }
     }
 }

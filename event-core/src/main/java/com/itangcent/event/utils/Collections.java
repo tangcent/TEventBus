@@ -35,4 +35,8 @@ public class Collections {
     public static <K, V> ConcurrentMap<K, V> newConcurrentMap() {
         return new ConcurrentHashMap<>();
     }
+
+    public static <E> E first(Collection<E> collection) {
+        return collection.iterator().next();
+    }
 }

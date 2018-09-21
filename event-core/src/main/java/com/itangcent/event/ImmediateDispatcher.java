@@ -1,5 +1,7 @@
 package com.itangcent.event;
 
+import com.itangcent.event.subscriber.Subscriber;
+
 import java.util.Collection;
 
 public class ImmediateDispatcher extends AbstractDispatcher {
