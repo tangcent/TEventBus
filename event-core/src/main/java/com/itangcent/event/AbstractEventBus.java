@@ -2,7 +2,6 @@ package com.itangcent.event;
 
 import com.itangcent.event.annotation.Retry;
 import com.itangcent.event.exceptions.EventFailedException;
-import com.itangcent.event.exceptions.EventSubscribeException;
 import com.itangcent.event.utils.AnnotationUtils;
 import com.itangcent.event.utils.ObjectUtils;
 import com.itangcent.event.utils.RetryUtils;
@@ -23,7 +22,7 @@ public abstract class AbstractEventBus implements EventBus, SubscriberExceptionH
 
     @Override
     public void post(Object event) {
-        Collection<Subscriber> subscribers = getSubscriberRegistry().getSubscribers(event);
+        Collection<Subscriber> subscribers = getSubscriberRegistry().getSubscribers(this, event);
         getDispatcher().dispatch(event, subscribers, this);
     }
 

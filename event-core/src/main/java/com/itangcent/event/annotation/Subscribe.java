@@ -14,7 +14,7 @@ public @interface Subscribe {
     String group() default "default";
 
     /**
-     * the bean name of EventBus which to subscribe on
+     * the name of EventBus which to subscribe on
      */
     String[] on() default {};
 

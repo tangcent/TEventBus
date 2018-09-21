@@ -11,6 +11,10 @@ public final class Predicates {
         return cls::isInstance;
     }
 
+    public static <T> Predicate<T> alwaysTrue() {
+        return t -> true;
+    }
+
     public static <T> Predicate<T> from(Function<T, Boolean> function) {
         return function::apply;
     }

@@ -13,7 +13,7 @@ public class ImmediateDispatcher extends AbstractDispatcher {
     }
 
     @Override
-    public void dispatch(Object event, Collection<Subscriber> subscribers, SubscriberExceptionHandler subscriberExceptionHandler) {
+    public void dispatchEvents(Object event, Collection<Subscriber> subscribers, SubscriberExceptionHandler subscriberExceptionHandler) {
         for (Subscriber subscriber : subscribers) {
             dispatch(event, subscriber, subscriberExceptionHandler);
         }

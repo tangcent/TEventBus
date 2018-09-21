@@ -19,23 +19,38 @@ public class LocalEventBusTest {
         });
         Subscriber subscriber = new Subscriber();
         localEventBus.register(subscriber);
-        localEventBus.post("hello world!");
-        localEventBus.post("hello Tom!");
+        localEventBus.post("world", "newUser");
+        localEventBus.post("Tom", "oldUser");
+        localEventBus.post("Louis");
         localEventBus.unregister(subscriber);
-        localEventBus.post("don't hello Emily!");
+        localEventBus.post("Emily");
     }
 
     private class Subscriber {
 
         int i = 0;
 
-        @Retry(times = 3)
         @Subscribe
-        private void listenString(String str) {
+        private void listenUser(String name) {
+            System.out.println(name + " login");
+        }
+
+        @Retry(times = 3)
+        @Subscribe(topic = "newUser")
+        private void listenNewUser(String name) {
             if (i++ < 2) {
-                throw new IllegalArgumentException("error:" + str);
+                throw new IllegalArgumentException("error hello new user:" + name);
             }
-            System.out.println(str);
+            System.out.println("hello " + name + "， welcome here");
+        }
+
+        @Retry(times = 3)
+        @Subscribe(topic = "oldUser")
+        private void listenOldUser(String name) {
+            if (i++ < 2) {
+                throw new IllegalArgumentException("error hello new user:" + name);
+            }
+            System.out.println("hello " + name + "， welcome back");
         }
     }
 }

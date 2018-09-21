@@ -94,21 +94,21 @@ public abstract class AbstractSubscriberRegistry implements SubscriberRegistry {
     }
 
     @Override
-    public Collection<Subscriber> getSubscribers(Object event) {
+    public Collection<Subscriber> getSubscribers(EventBus eventBus, Object event) {
 
         Collection<Class<?>> eventTypes = flattenHierarchy(event.getClass());
 
-        List<Subscriber> subscriberIterators = Collections.newArrayList();
+        List<Subscriber> subscriberList = Collections.newArrayList();
 
         for (Class<?> eventType : eventTypes) {
             CopyOnWriteArraySet<Subscriber> eventSubscribers = subscribers.get(eventType);
             if (eventSubscribers != null) {
                 // eager no-copy snapshot
-                subscriberIterators.addAll(eventSubscribers);
+                subscriberList.addAll(eventSubscribers);
             }
         }
 
-        return subscriberIterators;
+        return subscriberList;
     }
 
     private Map<Class<?>, Collection<Subscriber>> findAllSubscribers(Object subscriber) {
@@ -125,7 +125,6 @@ public abstract class AbstractSubscriberRegistry implements SubscriberRegistry {
     private List<SubscriberMethod> getAnnotatedMethods(Class<?> clazz) {
         return subscriberMethodsCache.computeIfAbsent(clazz, AbstractSubscriberRegistry::getAnnotatedMethodsNotCached);
     }
-
 
     /**
      * Global cache of classes to their flattened hierarchy of supertypes.

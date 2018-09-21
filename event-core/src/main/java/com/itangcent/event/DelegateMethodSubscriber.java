@@ -1,6 +1,7 @@
 package com.itangcent.event;
 
 import com.itangcent.event.exceptions.EventSubscribeException;
+import com.itangcent.event.utils.ExceptionUtils;
 import com.itangcent.event.utils.ReflectionUtils;
 
 import java.lang.reflect.InvocationTargetException;
@@ -27,17 +28,9 @@ public class DelegateMethodSubscriber implements Subscriber {
         try {
             method.invoke(delegate, event);
         } catch (InvocationTargetException e) {
-            warp(e.getCause());
+            ExceptionUtils.wrapAndThrow(e.getCause());
         } catch (Throwable ex) {
-            warp(ex);
-        }
-    }
-
-    private void warp(Throwable ex) {
-        if (ex instanceof RuntimeException) {
-            throw (RuntimeException) ex;
-        } else {
-            throw new EventSubscribeException(ex);
+            ExceptionUtils.wrapAndThrow(ex);
         }
     }
 

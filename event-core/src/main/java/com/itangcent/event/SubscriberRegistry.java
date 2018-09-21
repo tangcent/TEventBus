@@ -10,5 +10,5 @@ public interface SubscriberRegistry {
 
     public void unregister(Object subscriber);
 
-    Collection<Subscriber> getSubscribers(Object event);
+    Collection<Subscriber> getSubscribers(EventBus eventBus, Object event);
 }
