@@ -8,9 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.text.MessageFormat;
 import java.util.Random;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -48,7 +46,13 @@ public class LocalEventBusTest {
         AtomicInteger oldUserCount = new AtomicInteger(0);
 
         @Subscribe
+        private void listenString(String str, String topic) {
+            System.out.println(MessageFormat.format("A String Event:[{0}],topic:[{1}]", str, topic));
+        }
+
+        @Subscribe(topic = "*User")
         private void listenUser(String name, String topic) {
+            assert topic.endsWith("User");
             System.out.println(MessageFormat.format("[{0}]{1} {2} login", i.getAndIncrement(), topic, name));
         }
 
@@ -58,7 +62,9 @@ public class LocalEventBusTest {
             if (random.nextBoolean()) {
                 throw new IllegalArgumentException("error hello new user:" + name);
             }
-            System.out.println(MessageFormat.format("[{0}]hello {1}， welcome here", newUserCount.incrementAndGet(), name));
+            int count = newUserCount.incrementAndGet();
+            assert count < 3;
+            System.out.println(MessageFormat.format("[{0}]hello {1}， welcome here", count, name));
             Runs.uncheckDo(() -> Thread.sleep(TimeUnit.MILLISECONDS.toMillis(500)));
             newUserCount.decrementAndGet();
         }
@@ -69,7 +75,9 @@ public class LocalEventBusTest {
             if (random.nextBoolean()) {
                 throw new IllegalArgumentException("error hello old user:" + name);
             }
-            System.out.println(MessageFormat.format("[{0}]hello {1}， welcome back", oldUserCount.incrementAndGet(), name));
+            int count = oldUserCount.incrementAndGet();
+            assert count < 4;
+            System.out.println(MessageFormat.format("[{0}]hello {1}， welcome back", count, name));
             Runs.uncheckDo(() -> Thread.sleep(TimeUnit.MILLISECONDS.toMillis(500)));
             oldUserCount.decrementAndGet();
         }

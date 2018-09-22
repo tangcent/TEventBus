@@ -84,15 +84,8 @@ public class DefaultSubscriberRegistry extends AbstractSubscriberRegistry {
         };
     }
 
-    //todo:support pattern topics like [delete*]
     protected Predicate<String> topicSelect(String[] selectedTopics) {
-        return topic -> {
-            for (String selectedTopic : selectedTopics) {
-                if (Objects.equals(topic, selectedTopic)) {
-                    return true;
-                }
-            }
-            return false;
-        };
+        return Pattern.of(selectedTopics);
     }
+
 }

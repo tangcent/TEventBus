@@ -36,12 +36,15 @@ public abstract class LoggedEventExceptionHandle implements SubscriberExceptionH
 
         @Override
         protected String message(Throwable exception, SubscriberExceptionContext context) {
-            return "Exception thrown by subscriber "
+            return "Exception [" +
+                    exception.getMessage()
+                    + "] thrown by subscriber ["
                     + context.getSubscriber()
-                    + " on eventBus "
+                    + "] on eventBus ["
                     + context.getEventBus().name()
-                    + " when dispatching event: "
-                    + context.getEvent();
+                    + "] when dispatching event: ["
+                    + context.getEvent()
+                    + "]";
         }
     }
 
