@@ -20,7 +20,7 @@ public @interface Publish {
     String[] to() default {};
 
     /**
-     * pring Expression Language (SpEL) expression used for making the event
+     * spring Expression Language (SpEL) expression used for making the event
      * publishing conditional.
      */
     String condition() default "";

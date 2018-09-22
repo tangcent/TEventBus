@@ -47,6 +47,11 @@ public class DelegateMethodSubscriber implements Subscriber {
     }
 
     @Override
+    public Class getEventType() {
+        return eventType;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -72,7 +77,7 @@ public class DelegateMethodSubscriber implements Subscriber {
         if (method.getParameterCount() == 1) {
             return new SingleMethodInvoker();
         } else {
-            return new TopicedMethodInvoker();
+            return new TopicMethodInvoker();
         }
     }
 
@@ -87,7 +92,7 @@ public class DelegateMethodSubscriber implements Subscriber {
         }
     }
 
-    private class TopicedMethodInvoker implements MethodInvoker {
+    private class TopicMethodInvoker implements MethodInvoker {
 
         public void invoke(Object event, String topic) throws InvocationTargetException, IllegalAccessException {
             method.invoke(delegate, event, topic);

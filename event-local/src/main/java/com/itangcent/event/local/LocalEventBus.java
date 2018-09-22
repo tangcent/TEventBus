@@ -20,6 +20,11 @@ public class LocalEventBus extends AbstractEventBus {
         dispatcher = new ExecutorDispatcher(executorService);
     }
 
+    public LocalEventBus(SubscriberRegistry subscriberRegistry, Dispatcher dispatcher) {
+        this.subscriberRegistry = subscriberRegistry;
+        this.dispatcher = dispatcher;
+    }
+
     @Override
     protected SubscriberRegistry getSubscriberRegistry() {
         return subscriberRegistry;
@@ -33,6 +38,11 @@ public class LocalEventBus extends AbstractEventBus {
     @Override
     protected SubscriberExceptionHandler getSubscriberExceptionHandler() {
         return subscriberExceptionHandler;
+    }
+
+    @Override
+    public void post(Object event) {
+        onSubscribe(event);
     }
 
     public void setSubscriberExceptionHandler(SubscriberExceptionHandler subscriberExceptionHandler) {

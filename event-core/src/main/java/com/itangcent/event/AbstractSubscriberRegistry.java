@@ -69,6 +69,10 @@ public abstract class AbstractSubscriberRegistry implements SubscriberRegistry {
             }
 
             eventSubscribers.addAll(eventMethodsInListener);
+
+            for (Subscriber ssb : eventMethodsInListener) {
+                onRegisterSubscriber(ssb);
+            }
         }
     }
 
@@ -90,8 +94,34 @@ public abstract class AbstractSubscriberRegistry implements SubscriberRegistry {
                         "missing event subscriber for an annotated method. Is " + subscriber + " registered?");
             }
 
+            for (Subscriber ssb : listenerMethodsForType) {
+                onUnRegisterSubscriber(ssb);
+            }
             // don't try to remove the set if it's empty; that can't be done safely without a lock
             // anyway, if the set is empty it'll just be wrapping an array of length 0
+        }
+    }
+
+    private SubscribeListener subscribeListener;
+
+    @Override
+    public void listen(SubscribeListener subscribeListener) {
+        if (this.subscribeListener == null) {
+            this.subscribeListener = subscribeListener;
+        } else {
+            this.subscribeListener = SubscribeListener.union(this.subscribeListener, subscribeListener);
+        }
+    }
+
+    protected void onRegisterSubscriber(Subscriber subscriber) {
+        if (subscribeListener != null) {
+            subscribeListener.onRegisterSubscriber(subscriber);
+        }
+    }
+
+    protected void onUnRegisterSubscriber(Subscriber subscriber) {
+        if (subscribeListener != null) {
+            subscribeListener.onUnRegisterSubscriber(subscriber);
         }
     }
 

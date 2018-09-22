@@ -9,4 +9,8 @@ public interface Subscriber {
      * @return The subscribed method of the Subscriber.
      */
     Method getSubscriberMethod();
+
+    default Class getEventType() {
+        return getSubscriberMethod().getParameterTypes()[0];
+    }
 }

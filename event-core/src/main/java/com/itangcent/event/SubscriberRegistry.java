@@ -12,5 +12,7 @@ public interface SubscriberRegistry {
 
     public void unregister(Object subscriber);
 
+    void listen(SubscribeListener subscribeListener);
+
     void findSubscribers(EventBus eventBus, Object event, Consumer<Subscriber> subscriberConsumer);
 }

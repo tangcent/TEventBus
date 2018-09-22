@@ -43,7 +43,6 @@ public class ConcurrencySubscriber implements DelegateSubscriber {
         return Objects.equals(delegateSubscriber, that.getDelegate());
     }
 
-
     @Override
     public int hashCode() {
         return Objects.hash(delegateSubscriber);

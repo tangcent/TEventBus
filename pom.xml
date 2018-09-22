@@ -12,6 +12,8 @@
         <module>event-core</module>
         <module>event-utils</module>
         <module>event-local</module>
+        <module>event-redis</module>
+        <module>event-serializer</module>
     </modules>
 
     <properties>

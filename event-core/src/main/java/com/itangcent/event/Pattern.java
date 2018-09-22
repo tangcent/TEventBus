@@ -4,23 +4,47 @@ import java.util.function.Predicate;
 
 public interface Pattern extends Predicate<String> {
 
-    public static Pattern of(String pattern) {
-        if (pattern.equals('*')) {
+    static Pattern of(String pattern) {
+        if (pattern.equals("*")) {
             return topic -> true;
         } else if (pattern.contains("\\")) {
             return new RegexPattern(pattern);
-        } else if (pattern.startsWith("*") && pattern.lastIndexOf('*') == 0) {
+        } else if (isEndPattern(pattern)) {
             return new EndPattern(pattern.substring(1));
-        } else if (pattern.endsWith("*") && pattern.indexOf('*') == pattern.length() - 1) {
+        } else if (isStartPattern(pattern)) {
             return new StartPattern(pattern.substring(0, pattern.length() - 1));
-        } else if (pattern.contains("*") && pattern.indexOf('*') == pattern.lastIndexOf('*')) {
+        } else if (isContainPattern(pattern)) {
             return new ContainPattern(pattern);
         } else {
             return pattern::equals;
         }
     }
 
-    public static Pattern of(String[] patterns) {
+    //*xxx*
+    static boolean isContainPattern(String pattern) {
+        if (pattern.charAt(0) != '*') {
+            return false;
+        }
+        if (pattern.charAt(pattern.length() - 1) != '*') {
+            return false;
+        }
+        return pattern.indexOf('*', 1) == pattern.length() - 1;
+    }
+
+    //*xxx
+    static boolean isEndPattern(String pattern) {
+        if (pattern.charAt(0) != '*') {
+            return false;
+        }
+        return pattern.indexOf('*', 1) == -1;
+    }
+
+    //xxx*
+    static boolean isStartPattern(String pattern) {
+        return pattern.indexOf('*', 1) == pattern.length() - 1;
+    }
+
+    static Pattern of(String[] patterns) {
         if (patterns.length == 1) {
             return of(patterns[0]);
         }
@@ -40,8 +64,7 @@ public interface Pattern extends Predicate<String> {
         };
     }
 
-
-    static class RegexPattern implements Pattern {
+    class RegexPattern implements Pattern {
         java.util.regex.Pattern pattern;
 
         public RegexPattern(String pattern) {
@@ -54,7 +77,7 @@ public interface Pattern extends Predicate<String> {
         }
     }
 
-    static class StartPattern implements Pattern {
+    class StartPattern implements Pattern {
         String prefix;
 
         public StartPattern(String prefix) {
@@ -67,7 +90,7 @@ public interface Pattern extends Predicate<String> {
         }
     }
 
-    static class EndPattern implements Pattern {
+    class EndPattern implements Pattern {
         String suffix;
 
         public EndPattern(String suffix) {
@@ -80,7 +103,7 @@ public interface Pattern extends Predicate<String> {
         }
     }
 
-    static class ContainPattern implements Pattern {
+    class ContainPattern implements Pattern {
         String sub;
 
         public ContainPattern(String sub) {
