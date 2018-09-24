@@ -19,25 +19,58 @@ public class RedisEventBusTest {
 
     @Test
     public void test() {
-        RedisEventBus redisEventBus = new RedisEventBus(new JedisPool("localhost", 6379));
-        redisEventBus.setSubscriberExceptionHandler(LoggedEventExceptionHandle.message());
-        Subscriber subscriber = new Subscriber();
-        redisEventBus.register(subscriber);
-        Runs.uncheckDo(() -> Thread.sleep(TimeUnit.SECONDS.toMillis(3)));
-        redisEventBus.post("world", "newUser");
-        for (String oldUser : oldUsers) {
-            redisEventBus.post(oldUser, "oldUser");
-        }
-        for (String newUser : newUsers) {
-            redisEventBus.post(newUser, "newUser");
-        }
-        redisEventBus.post("Jeremiah");
-        redisEventBus.post("Emily");
+        //hostA subscribe Thread
+        new Thread(() -> {
+            RedisEventBus redisEventBus = new RedisEventBus(new JedisPool("localhost", 6379));
+            redisEventBus.setSubscriberExceptionHandler(LoggedEventExceptionHandle.message());
+            Subscriber subscriber = new Subscriber("hostA");
+            redisEventBus.register(subscriber);
+            Runs.uncheckDo(() -> Thread.sleep(TimeUnit.SECONDS.toMillis(10)));
+            redisEventBus.shutdown();
+        }).start();
+
+        //hostB subscribe Thread
+        new Thread(() -> {
+            RedisEventBus redisEventBus = new RedisEventBus(new JedisPool("localhost", 6379));
+            redisEventBus.setSubscriberExceptionHandler(LoggedEventExceptionHandle.message());
+            Subscriber subscriber = new Subscriber("hostB");
+            redisEventBus.register(subscriber);
+            Runs.uncheckDo(() -> Thread.sleep(TimeUnit.SECONDS.toMillis(10)));
+            redisEventBus.shutdown();
+        }).start();
+
+        Runs.uncheckDo(() -> Thread.sleep(TimeUnit.SECONDS.toMillis(2)));
+
+        //event post Thread
+        new Thread(() -> {
+            RedisEventBus redisEventBus = new RedisEventBus(new JedisPool("localhost", 6379));
+            redisEventBus.setSubscriberExceptionHandler(LoggedEventExceptionHandle.message());
+            redisEventBus.post("world", "newUser");
+            for (String oldUser : oldUsers) {
+                redisEventBus.post(oldUser, "oldUser");
+            }
+            for (String newUser : newUsers) {
+                redisEventBus.post(newUser, "newUser");
+            }
+            redisEventBus.post("Jeremiah");
+            redisEventBus.post("Emily");
+            Runs.uncheckDo(() -> Thread.sleep(TimeUnit.SECONDS.toMillis(10)));
+            redisEventBus.shutdown();
+        }).start();
+
         Runs.uncheckDo(() -> Thread.sleep(TimeUnit.SECONDS.toMillis(10)));
-        redisEventBus.shutdown();
     }
 
     private class Subscriber {
+
+        String host = "localhost";
+
+        public Subscriber() {
+        }
+
+        public Subscriber(String host) {
+            this.host = host;
+        }
 
         Random random = new Random(System.currentTimeMillis());
 
@@ -47,13 +80,13 @@ public class RedisEventBusTest {
 
         @Subscribe
         private void listenString(String str, String topic) {
-            System.out.println(MessageFormat.format("A String Event:[{0}],topic:[{1}]", str, topic));
+            System.out.println(MessageFormat.format("[{0}]A String Event:[{1}],topic:[{2}]", host, str, topic));
         }
 
         @Subscribe(topic = "*User")
         private void listenUser(String name, String topic) {
             assert topic.endsWith("User");
-            System.out.println(MessageFormat.format("[{0}]{1} {2} login", i.getAndIncrement(), topic, name));
+            System.out.println(MessageFormat.format("[{0}][{1}]{2} {3} login", host, i.getAndIncrement(), topic, name));
         }
 
         @Retry(times = 3)
@@ -64,7 +97,7 @@ public class RedisEventBusTest {
             }
             int count = newUserCount.incrementAndGet();
             assert count < 3;
-            System.out.println(MessageFormat.format("[{0}]hello {1}， welcome here", count, name));
+            System.out.println(MessageFormat.format("[{0}][{1}]hello {2}， welcome here", host, count, name));
             Runs.uncheckDo(() -> Thread.sleep(TimeUnit.MILLISECONDS.toMillis(500)));
             newUserCount.decrementAndGet();
         }
@@ -77,7 +110,7 @@ public class RedisEventBusTest {
             }
             int count = oldUserCount.incrementAndGet();
             assert count < 4;
-            System.out.println(MessageFormat.format("[{0}]hello {1}， welcome back", count, name));
+            System.out.println(MessageFormat.format("[{0}][{1}]hello {2}， welcome back", host, count, name));
             Runs.uncheckDo(() -> Thread.sleep(TimeUnit.MILLISECONDS.toMillis(500)));
             oldUserCount.decrementAndGet();
         }

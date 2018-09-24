@@ -26,7 +26,9 @@ public class RedisEventBus extends AbstractEventBus {
     private static final Serializer serializer = new JacksonSerializer();
 
     public RedisEventBus(JedisPool jedisPool) {
-        this(new DefaultSubscriberRegistry(), new ExecutorDispatcher(Executors.newFixedThreadPool(4)), jedisPool);
+        this(new DefaultSubscriberRegistry(),
+                new ExecutorDispatcher(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() + 1)),
+                jedisPool);
     }
 
     public RedisEventBus(ExecutorService executorService, JedisPool jedisPool) {
@@ -44,7 +46,7 @@ public class RedisEventBus extends AbstractEventBus {
         this.subscriberExceptionHandler = subscriberExceptionHandler;
     }
 
-    ListenThread listenThread;//handle the register or unRegister
+    private ListenThread listenThread;//handle the register or unRegister
 //    Thread subscribeThread;//subscribe redis
 
     private List<Subscriber> subscribers = new ArrayList<>();
