@@ -12,6 +12,9 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface Publish {
 
+    /**
+     * topics to publish
+     */
     String[] topic() default {};
 
     /**
@@ -26,7 +29,7 @@ public @interface Publish {
     String condition() default "";
 
     /**
-     * pring Expression Language (SpEL) expression used  to veto event
+     * spring Expression Language (SpEL) expression used  to veto event
      * publishing
      */
     String unless() default "";

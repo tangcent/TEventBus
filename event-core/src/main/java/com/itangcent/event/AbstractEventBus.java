@@ -18,7 +18,7 @@ public abstract class AbstractEventBus implements EventBus {
         post(new TopicEvent(event, topic));
     }
 
-    public void onSubscribe(Object event) {
+    protected void onSubscribe(Object event) {
         Dispatcher dispatcher = getDispatcher();
         getSubscriberRegistry().findSubscribers(this, event, subscriber -> {
             dispatcher.dispatch(event, subscriber, exceptionHandler);

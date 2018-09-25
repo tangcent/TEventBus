@@ -103,3 +103,8 @@ fabric.properties
 \.idea/
 
 event-core/event-core\.iml
+/event-demo/event-spring-boot-demo/.mvn/
+
+event-demo/event-spring-boot-demo/mvnw
+
+event-demo/event-spring-boot-demo/mvnw\.cmd

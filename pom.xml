@@ -14,6 +14,9 @@
         <module>event-local</module>
         <module>event-redis</module>
         <module>event-serializer</module>
+        <module>event-spring</module>
+        <module>event-demo</module>
+        <module>event-demo/event-spring-boot-demo</module>
     </modules>
 
     <properties>
