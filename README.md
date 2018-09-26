@@ -1,5 +1,40 @@
 # TEventBus
     minimalism eventbus
+    
+    
+# @Subscribe
+
+```java
+        @Subscribe
+        private void listenMethod(String event) {
+            ...
+        }
+        
+        @Subscribe(topic = "topic")
+        private void listenTopicMethod(String event) {
+            ...
+        }
+```
+
+# @Retry
+
+```java
+        @Retry(times = 3)
+        @Subscribe
+        private void listenMethod(String event) {
+            ...
+        }
+```
+# @Publish
+
+```java
+        @Publish(to = "busName")
+        public String login(...) {
+            ...
+        }
+```
+
+
 # Demo
 
 ```java
