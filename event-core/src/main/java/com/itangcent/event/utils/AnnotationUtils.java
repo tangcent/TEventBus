@@ -1,5 +1,7 @@
 package com.itangcent.event.utils;
 
+import com.itangcent.event.reflect.TypeToken;
+
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Repeatable;
 import java.lang.reflect.AnnotatedElement;
@@ -38,6 +40,22 @@ public final class AnnotationUtils {
 
     private static transient Logger logger;
 
+
+    @SuppressWarnings("unchecked")
+    public static boolean existedAnnotationAnyWhere(Class cls, Class<? extends Annotation> annotationType) {
+        Set<? extends Class<?>> supertypes = TypeToken.of(cls).getTypes().rawTypes();
+        for (Class<?> supertype : supertypes) {
+            if (supertype.isAnnotationPresent(annotationType)) {
+                return true;
+            }
+            for (Method method : supertype.getDeclaredMethods()) {
+                if (method.isAnnotationPresent(annotationType) && !method.isSynthetic()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     /**
      * Get a single {@link Annotation} of {@code annotationType} from the supplied
@@ -157,7 +175,6 @@ public final class AnnotationUtils {
         }
         return null;
     }
-
 
     /**
      * Get the <em>repeatable</em> {@linkplain Annotation annotations} of

@@ -1,6 +1,10 @@
 package com.itangcent.event.spring.core;
 
 import com.itangcent.event.EventBus;
+import com.itangcent.event.annotation.Publish;
+import com.itangcent.event.annotation.Subscribe;
+import com.itangcent.event.spring.utils.ReflectionUtils;
+import com.itangcent.event.utils.AnnotationUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 
@@ -19,7 +23,21 @@ public class EventBeanPostProcessor implements BeanPostProcessor {
         if (bean instanceof EventBus) {
             eventBusManager.addEventBus(beanName, (EventBus) bean);
         }
-        //todo:consider only try build proxy for class which annotation by @Event
-        return eventCglibProxyFactory.buildProxy(bean);
+
+        if (bean instanceof EventComponentConfigurer) {
+            eventBusManager.setSubscriberRegistries(((EventComponentConfigurer) bean).getSubscriberRegistries());
+        }
+
+        Class<?> beanCls = ReflectionUtils.getClass(bean);
+
+        if (AnnotationUtils.existedAnnotationAnyWhere(beanCls, Subscribe.class)) {
+            eventBusManager.addEventBusListeners(bean);
+        }
+
+        if (AnnotationUtils.existedAnnotationAnyWhere(beanCls, Publish.class)) {
+            return eventCglibProxyFactory.buildProxy(bean);
+        }
+
+        return bean;
     }
 }

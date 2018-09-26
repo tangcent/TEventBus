@@ -3,6 +3,7 @@ package com.itangcent.event;
 import com.itangcent.event.subscriber.Subscriber;
 
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ExecutorDispatcher extends AbstractDispatcher {
 
@@ -10,6 +11,10 @@ public class ExecutorDispatcher extends AbstractDispatcher {
 
     public ExecutorDispatcher(ExecutorService executorService) {
         this.executorService = executorService;
+    }
+
+    public ExecutorDispatcher() {
+        this(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
     }
 
     @Override

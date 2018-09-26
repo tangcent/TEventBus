@@ -1,13 +1,12 @@
 package com.itangcent.event.spring.core;
 
 import com.itangcent.event.EventBus;
+import com.itangcent.event.SubscriberRegistry;
 import com.itangcent.event.spring.utils.SpringBeanFactory;
 import com.itangcent.event.utils.Assert;
 
 import javax.annotation.Resource;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class DefaultEventBusManager implements EventBusManager {
 
@@ -15,6 +14,29 @@ public class DefaultEventBusManager implements EventBusManager {
     private CompletedApplicationListener completedApplicationListener;
 
     private Map<String, EventBus> eventBusMap = new HashMap<>();
+
+    private List<Object> eventBusListeners = new ArrayList<>();
+
+    private List<SubscriberRegistry> subscriberRegistries = new ArrayList<>();
+
+    @Override
+    public void setSubscriberRegistries(List<SubscriberRegistry> subscriberRegistries) {
+        Assert.notNull(subscriberRegistries);
+        this.subscriberRegistries = subscriberRegistries;
+        for (SubscriberRegistry registry : subscriberRegistries) {
+            for (Object eventBusListener : eventBusListeners) {
+                registry.register(eventBusListener);
+            }
+        }
+    }
+
+    @Override
+    public void addEventBusListeners(Object eventBusListener) {
+        this.eventBusListeners.add(eventBusListener);
+        for (SubscriberRegistry registry : subscriberRegistries) {
+            registry.register(eventBusListener);
+        }
+    }
 
     @Override
     public Collection<EventBus> eventBuses() {
@@ -49,6 +71,7 @@ public class DefaultEventBusManager implements EventBusManager {
         @Override
         public void run() {
             Object eventBus = SpringBeanFactory.getBean(name);
+            Assert.notNull(eventBus, "EventBus named [%s] not present!", name);
             Assert.isInstanceOf(EventBus.class, eventBus, "bean named [%s] should be a EventBus!", name);
             delegateEventBus.setDelegate((EventBus) eventBus);
         }

@@ -1,12 +1,15 @@
 package com.itangcent.event.spring.utils;
 
 import org.springframework.aop.SpringProxy;
+import org.springframework.aop.TargetClassAware;
 import org.springframework.aop.framework.Advised;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.asm.Attribute;
 import org.springframework.asm.Type;
 import org.springframework.cglib.core.*;
 import org.springframework.cglib.proxy.Factory;
 import org.springframework.core.DecoratingProxy;
+import org.springframework.util.ClassUtils;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -336,10 +339,26 @@ public class ReflectionUtils {
         return names;
     }
 
+    /**
+     * 获取目标的实际类型(解代理)
+     */
+    public static Class<?> getClass(Object object) {
+        Class<?> targetClass = object.getClass();
+        if (AopUtils.isCglibProxy(object) || ClassUtils.isCglibProxy(object)) {
+            targetClass = targetClass.getSuperclass();
+        }
+
+        if (object instanceof TargetClassAware) {
+            return ((TargetClassAware) object).getTargetClass();
+        }
+
+        return targetClass;
+    }
+
     public static Class[] getClasses(Object[] objects) {
         Class[] classes = new Class[objects.length];
         for (int i = 0; i < objects.length; i++) {
-            classes[i] = objects[i].getClass();
+            classes[i] = getClass(objects[i]);
         }
         return classes;
     }
@@ -440,7 +459,6 @@ public class ReflectionUtils {
         }
         return list;
     }
-
 
     public static Method findInterfaceMethod(Class iface) {
         if (!iface.isInterface()) {
@@ -592,5 +610,4 @@ public class ReflectionUtils {
         }
         return result;
     }
-
 }
