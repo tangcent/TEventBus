@@ -3,11 +3,10 @@ package com.itangcent.event.spring;
 import com.itangcent.event.spring.core.*;
 import com.itangcent.event.spring.utils.SpringBeanFactory;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class CoreConfiguration {
+public class EventCoreConfiguration {
 
     @Bean
     public CompletedApplicationListener completedApplicationListener() {

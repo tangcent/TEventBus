@@ -6,7 +6,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService {
 
-    @Publish(to = "local")
+//    @Publish(to = "local")
+    @Publish
     public String login(String name) {
         return name;
     }

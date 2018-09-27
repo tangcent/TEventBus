@@ -4,6 +4,7 @@ import com.itangcent.event.EventBus;
 import com.itangcent.event.SubscriberRegistry;
 import com.itangcent.event.spring.utils.SpringBeanFactory;
 import com.itangcent.event.utils.Assert;
+import com.itangcent.event.utils.Collections;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -39,8 +40,10 @@ public class DefaultEventBusManager implements EventBusManager {
     }
 
     @Override
-    public Collection<EventBus> eventBuses() {
-        return eventBusMap.values();
+    public EventBus eventBuses() {
+        DelegateEventBus eventBus = new DelegateEventBus();
+        completedApplicationListener.addRefreshTasks(new EntiretyEventSearch(eventBus));
+        return eventBus;
     }
 
     @Override
@@ -74,6 +77,27 @@ public class DefaultEventBusManager implements EventBusManager {
             Assert.notNull(eventBus, "EventBus named [%s] not present!", name);
             Assert.isInstanceOf(EventBus.class, eventBus, "bean named [%s] should be a EventBus!", name);
             delegateEventBus.setDelegate((EventBus) eventBus);
+        }
+    }
+
+    private class EntiretyEventSearch implements Runnable {
+
+        private DelegateEventBus delegateEventBus;
+
+        public EntiretyEventSearch(DelegateEventBus delegateEventBus) {
+            this.delegateEventBus = delegateEventBus;
+        }
+
+        @Override
+        public void run() {
+            Assert.isTrue(!eventBusMap.isEmpty(), "No EventBus be found!");
+            Collection<EventBus> eventBuses = eventBusMap.values();
+            if (eventBuses.size() == 1) {
+                delegateEventBus.setDelegate(Collections.first(eventBuses));
+            } else {
+                EventBus[] eventBusArr = eventBuses.toArray(new EventBus[eventBuses.size()]);
+                delegateEventBus.setDelegate(new ComponentEventBus(eventBusArr));
+            }
         }
     }
 }

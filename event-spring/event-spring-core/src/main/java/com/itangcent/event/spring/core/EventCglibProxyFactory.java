@@ -12,7 +12,6 @@ import org.springframework.cglib.proxy.MethodInterceptor;
 
 import javax.annotation.Resource;
 import java.lang.reflect.Method;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -48,16 +47,20 @@ public class EventCglibProxyFactory extends CglibProxyFactory {
 
         Publish publish = AnnotationUtils.getAnnotation(method, Publish.class);
 
-        EventBus[] toEventBus = null;
+        EventBus toEventBus = null;
 
         String[] to = publish.to();
         if (to.length == 0) {
-            Collection<EventBus> collection = eventBusManager.eventBuses();
-            toEventBus = collection.toArray(new EventBus[collection.size()]);
+            toEventBus = eventBusManager.eventBuses();
         } else {
-            toEventBus = new EventBus[to.length];
-            for (int i = 0; i < to.length; i++) {
-                toEventBus[i] = eventBusManager.getEventBus(to[i]);
+            if (to.length == 1) {
+                toEventBus = eventBusManager.getEventBus(to[0]);
+            } else {
+                EventBus[] toEventBuses = new EventBus[to.length];
+                for (int i = 0; i < to.length; i++) {
+                    toEventBuses[i] = eventBusManager.getEventBus(to[i]);
+                }
+                toEventBus = new ComponentEventBus(toEventBuses);
             }
         }
 
@@ -65,7 +68,7 @@ public class EventCglibProxyFactory extends CglibProxyFactory {
         if (topics.length == 0) {
             return new PublishProxyMethod(toEventBus);
         } else {
-            return new TopicPublishProxyMethod(topics, toEventBus);
+            return new TopicPublishProxyMethod(toEventBus, topics);
         }
     }
 

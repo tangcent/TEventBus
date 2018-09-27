@@ -11,7 +11,7 @@ public interface EventBusManager {
 
     void addEventBusListeners(Object eventBusListener);
 
-    Collection<EventBus> eventBuses();
+    EventBus eventBuses();
 
     EventBus getEventBus(String name);
 
