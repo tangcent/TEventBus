@@ -17,6 +17,14 @@ public class TopicPublishProxyMethod implements MethodInterceptor {
         this.topics = topics;
     }
 
+    public EventBus getEventBus() {
+        return eventBus;
+    }
+
+    public String[] getTopics() {
+        return topics;
+    }
+
     @Override
     public Object intercept(Object o, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
         Object returnVal = method.invoke(o, args);

@@ -39,4 +39,21 @@ public class Collections {
     public static <E> E first(Collection<E> collection) {
         return collection.iterator().next();
     }
+
+    public static <E> boolean equals(E[] arr, E[] arr2) {
+        if (arr == null) return arr2 == null;
+        if (arr2 == null) return false;
+        if (arr == arr2) return true;
+        if (arr.length != arr2.length) return false;
+        if (arr.length == 1) return arr[0].equals(arr2[0]);
+
+        HashSet<E> set = new HashSet<>();
+        java.util.Collections.addAll(set, arr);
+        for (E e : arr2) {
+            if (!set.contains(e)) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

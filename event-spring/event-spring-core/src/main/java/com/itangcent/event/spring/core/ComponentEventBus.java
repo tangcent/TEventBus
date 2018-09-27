@@ -25,4 +25,25 @@ public class ComponentEventBus implements EventBus {
             eventBus.post(event);
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ComponentEventBus that = (ComponentEventBus) o;
+        return Arrays.equals(eventBuses, that.eventBuses);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(eventBuses);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("ComponentEventBus{");
+        sb.append("eventBuses=").append(Arrays.toString(eventBuses));
+        sb.append('}');
+        return sb.toString();
+    }
 }

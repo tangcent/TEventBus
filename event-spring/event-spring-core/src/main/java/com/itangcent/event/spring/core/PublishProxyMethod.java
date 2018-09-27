@@ -14,6 +14,10 @@ public class PublishProxyMethod implements MethodInterceptor {
         this.eventBus = eventBus;
     }
 
+    public EventBus getEventBus() {
+        return eventBus;
+    }
+
     @Override
     public Object intercept(Object o, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
         Object returnVal = method.invoke(o, args);

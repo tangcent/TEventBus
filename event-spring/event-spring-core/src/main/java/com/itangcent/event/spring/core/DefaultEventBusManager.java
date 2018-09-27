@@ -39,10 +39,17 @@ public class DefaultEventBusManager implements EventBusManager {
         }
     }
 
+
+    private Map<String, EventBus> busCache = new HashMap<>();
+
     @Override
     public EventBus eventBuses() {
-        DelegateEventBus eventBus = new DelegateEventBus();
-        completedApplicationListener.addRefreshTasks(new EntiretyEventSearch(eventBus));
+        EventBus eventBus = busCache.get("");
+        if (eventBus == null) {
+            eventBus = new DelegateEventBus();
+            busCache.put("", eventBus);
+            completedApplicationListener.addRefreshTasks(new EntiretyEventSearch((DelegateEventBus) eventBus));
+        }
         return eventBus;
     }
 
@@ -50,8 +57,12 @@ public class DefaultEventBusManager implements EventBusManager {
     public EventBus getEventBus(String name) {
         EventBus eventBus = eventBusMap.get(name);
         if (eventBus == null) {
-            eventBus = new DelegateEventBus();
-            completedApplicationListener.addRefreshTasks(new EventSearch(name, (DelegateEventBus) eventBus));
+            eventBus = busCache.get(name);
+            if (eventBus == null) {
+                eventBus = new DelegateEventBus();
+                busCache.put(name, eventBus);
+                completedApplicationListener.addRefreshTasks(new EventSearch(name, (DelegateEventBus) eventBus));
+            }
         }
         return eventBus;
     }
