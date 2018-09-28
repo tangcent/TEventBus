@@ -51,6 +51,9 @@ public interface Pattern extends Predicate<String> {
         Pattern[] result = new Pattern[patterns.length];
         for (int i = 0; i < patterns.length; i++) {
             String pattern = patterns[i];
+            if (pattern.equals("*")) {
+                return topic -> true;
+            }
             result[i] = of(pattern);
         }
 
