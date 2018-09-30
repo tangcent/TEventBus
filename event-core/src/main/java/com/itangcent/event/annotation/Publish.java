@@ -22,6 +22,11 @@ public @interface Publish {
      */
     String[] to() default {};
 
+    //the event to post
+    String event() default "$rtn";
+
+    Stage stage() default Stage.AFTER;
+
     /**
      * spring Expression Language (SpEL) expression used for making the event
      * publishing conditional.
