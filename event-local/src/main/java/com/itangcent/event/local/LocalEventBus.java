@@ -8,7 +8,6 @@ public class LocalEventBus extends AbstractEventBus {
     private SubscriberRegistry subscriberRegistry;
     private Dispatcher dispatcher;
     private SubscriberExceptionHandler subscriberExceptionHandler;
-    private String name = "LocalEventBus";
 
     public LocalEventBus() {
         subscriberRegistry = new DefaultSubscriberRegistry();
@@ -57,8 +56,4 @@ public class LocalEventBus extends AbstractEventBus {
         subscriberRegistry.unregister(subscriber);
     }
 
-    @Override
-    public String name() {
-        return name;
-    }
 }

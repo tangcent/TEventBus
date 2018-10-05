@@ -1,6 +1,7 @@
 package com.itangcent.event.spring;
 
 import com.itangcent.event.spring.core.EventBeanDefinitionRegistryPostProcessor;
+import com.itangcent.event.spring.core.EventBeanPostProcessor;
 import com.itangcent.event.spring.core.interceptor.DefaultEventInfoExtractor;
 import com.itangcent.event.spring.core.interceptor.EventBeanFactoryAdvisor;
 import com.itangcent.event.spring.core.interceptor.EventInfoExtractor;
@@ -10,6 +11,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Role;
 
 public class EventBeanAutoConfiguration {
+
+    @Bean
+    public EventBeanPostProcessor eventBeanPostProcessor() {
+        return new EventBeanPostProcessor();
+    }
 
     @Bean
     public EventBeanDefinitionRegistryPostProcessor eventBeanDefinitionRegistryPostProcessor() {
