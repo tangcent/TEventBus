@@ -1,3 +1,4 @@
 # Auto Configuration
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.itangcent.event.spring.EventAutoConfiguration
+  com.itangcent.event.spring.EventAutoConfiguration,\
+  com.itangcent.event.spring.EventBeanAutoConfiguration

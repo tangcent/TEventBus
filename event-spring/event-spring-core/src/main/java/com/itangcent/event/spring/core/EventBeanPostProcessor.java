@@ -12,8 +12,8 @@ import javax.annotation.Resource;
 
 public class EventBeanPostProcessor implements BeanPostProcessor {
 
-    @Resource
-    EventCglibProxyFactory eventCglibProxyFactory;
+//    @Resource
+//    EventCglibProxyFactory eventCglibProxyFactory;
 
     @Resource
     EventBusManager eventBusManager;
@@ -34,10 +34,12 @@ public class EventBeanPostProcessor implements BeanPostProcessor {
             eventBusManager.addEventBusListeners(bean);
         }
 
-        if (AnnotationUtils.existedAnnotationAnyWhere(beanCls, Publish.class)) {
-            return eventCglibProxyFactory.buildProxy(bean);
-        }
+//        if (AnnotationUtils.existedAnnotationAnyWhere(beanCls, Publish.class)) {
+//            return eventCglibProxyFactory.buildProxy(bean);
+//        }
 
         return bean;
     }
+
+
 }
