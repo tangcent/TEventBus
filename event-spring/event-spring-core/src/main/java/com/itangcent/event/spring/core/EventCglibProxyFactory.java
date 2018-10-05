@@ -3,6 +3,8 @@ package com.itangcent.event.spring.core;
 import com.itangcent.event.EventBus;
 import com.itangcent.event.annotation.Publish;
 import com.itangcent.event.reflect.TypeToken;
+import com.itangcent.event.spring.core.method.PublishProxyMethod;
+import com.itangcent.event.spring.core.method.TopicPublishProxyMethod;
 import com.itangcent.event.spring.proxy.CglibProxyFactory;
 import com.itangcent.event.utils.AnnotationUtils;
 import com.itangcent.event.utils.Assert;
@@ -15,6 +17,7 @@ import javax.annotation.Resource;
 import java.lang.reflect.Method;
 import java.util.*;
 
+@Deprecated
 public class EventCglibProxyFactory extends CglibProxyFactory {
 
     @Resource

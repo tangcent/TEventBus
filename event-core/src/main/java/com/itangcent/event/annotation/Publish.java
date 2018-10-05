@@ -1,15 +1,13 @@
 package com.itangcent.event.annotation;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * publish the return value of the method to EventBus
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
+@Repeatable(Publishes.class)
 public @interface Publish {
 
     /**
@@ -23,7 +21,7 @@ public @interface Publish {
     String[] to() default {};
 
     //the event to post
-    String event() default "$rtn";
+    String event() default "#result";
 
     Stage stage() default Stage.AFTER;
 

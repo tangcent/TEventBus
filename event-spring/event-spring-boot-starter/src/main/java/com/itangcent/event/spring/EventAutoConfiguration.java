@@ -6,12 +6,16 @@ import com.itangcent.event.ExecutorDispatcher;
 import com.itangcent.event.SubscriberRegistry;
 import com.itangcent.event.local.LocalEventBus;
 import com.itangcent.event.spring.core.*;
-import com.itangcent.event.spring.utils.SpringBeanFactory;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import com.itangcent.event.spring.core.interceptor.DefaultEventInfoExtractor;
+import com.itangcent.event.spring.core.interceptor.EventBeanFactoryAdvisor;
+import com.itangcent.event.spring.core.interceptor.EventInfoExtractor;
+import com.itangcent.event.spring.core.interceptor.EventInterceptor;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Role;
 
 import javax.annotation.Resource;
 import java.util.Collections;
@@ -20,7 +24,11 @@ import java.util.concurrent.Executors;
 @EnableConfigurationProperties({EventAutoProperties.class})
 public class EventAutoConfiguration {
 
-    private final EventAutoProperties eventAutoProperties;
+    private EventAutoProperties eventAutoProperties;
+
+//    public EventAutoConfiguration() {
+//        System.out.println("error");
+//    }
 
     public EventAutoConfiguration(EventAutoProperties eventAutoProperties) {
         this.eventAutoProperties = eventAutoProperties;
@@ -57,13 +65,6 @@ public class EventAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean
-    public SpringBeanFactory springBeanFactory() {
-        return new SpringBeanFactory();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
     public EventBeanPostProcessor eventBeanPostProcessor() {
         return new EventBeanPostProcessor();
     }
@@ -74,9 +75,9 @@ public class EventAutoConfiguration {
         return new DefaultEventBusManager();
     }
 
-    @Bean
-    @ConditionalOnMissingBean
-    public EventCglibProxyFactory eventCglibProxyFactory() {
-        return new EventCglibProxyFactory();
-    }
+//    @Bean
+//    @ConditionalOnMissingBean
+//    public EventCglibProxyFactory eventCglibProxyFactory() {
+//        return new EventCglibProxyFactory();
+//    }
 }
