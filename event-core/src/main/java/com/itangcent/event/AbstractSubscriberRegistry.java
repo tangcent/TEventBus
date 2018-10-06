@@ -126,6 +126,15 @@ public abstract class AbstractSubscriberRegistry implements SubscriberRegistry {
     }
 
     @Override
+    public void findAllSubscribers(Consumer<Subscriber> subscriberConsumer) {
+        for (CopyOnWriteArraySet<Subscriber> subscriberSet : subscribers.values()) {
+            for (Subscriber subscriber : subscriberSet) {
+                subscriberConsumer.accept(subscriber);
+            }
+        }
+    }
+
+    @Override
     public void findSubscribers(EventBus eventBus, Object event, Consumer<Subscriber> subscriberConsumer) {
 
         Collection<Class<?>> eventTypes = flattenHierarchy(event.getClass());

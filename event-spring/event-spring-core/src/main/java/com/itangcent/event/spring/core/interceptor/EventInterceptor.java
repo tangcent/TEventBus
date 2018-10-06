@@ -3,8 +3,10 @@ package com.itangcent.event.spring.core.interceptor;
 import com.itangcent.event.EventBus;
 import com.itangcent.event.TopicEvent;
 import com.itangcent.event.annotation.Stage;
+import com.itangcent.event.spring.core.ArrSwap;
 import com.itangcent.event.spring.core.ComponentEventBus;
 import com.itangcent.event.spring.core.EventBusManager;
+import com.itangcent.event.utils.Assert;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.aop.framework.AopProxyUtils;
@@ -24,6 +26,8 @@ import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.springframework.aop.support.AopUtils.getTargetClass;
 
@@ -34,10 +38,13 @@ public class EventInterceptor implements MethodInterceptor, BeanFactoryAware, In
     @Nullable
     private BeanFactory beanFactory;
 
+    @Nullable
+    private EventBusManager eventBusManager;
+
     private EventExpressionEvaluator eventExpressionEvaluator = new EventExpressionEvaluator();
 
     private EventInfoExtractor eventInfoExtractor = new DefaultEventInfoExtractor();
-    static EventInterceptor instance = new EventInterceptor();
+    private static EventInterceptor instance = new EventInterceptor();
 
     public static EventInterceptor instance() {
         return instance;
@@ -72,7 +79,6 @@ public class EventInterceptor implements MethodInterceptor, BeanFactoryAware, In
         return invoker.invoke();
     }
 
-
     private class EventInfoContext {
 
         private final MultiValueMap<Stage, EventPublishInfo> publishInfos;
@@ -92,7 +98,6 @@ public class EventInterceptor implements MethodInterceptor, BeanFactoryAware, In
             return publishInfos.get(stage);
         }
     }
-
 
     private Object execute(EventMethodInvoker invoker, Object target, Method method, Object[] args, EventInfoContext eventInfoContext) {
 
@@ -243,30 +248,44 @@ public class EventInterceptor implements MethodInterceptor, BeanFactoryAware, In
         }
     }
 
-    private EventBus findEventBus(String[] busName) {
-        EventBus toEventBus;
-        EventBusManager eventBusManager = beanFactory.getBean(EventBusManager.class);
+    private Map<ArrSwap<String>, EventBus> busCache = new ConcurrentHashMap<>();
 
-        if (busName.length == 0) {
-            toEventBus = eventBusManager.eventBuses();
-        } else {
-            if (busName.length == 1) {
-                toEventBus = eventBusManager.getEventBus(busName[0]);
+    private EventBus findEventBus(String[] busName) {
+        EventBus eventBus = busCache.get(new ArrSwap<>(busName));
+        if (eventBus == null) {
+            EventBusManager eventBusManager = getEventBusManager();
+            assert eventBusManager != null;
+
+            if (busName.length == 0) {
+                eventBus = eventBusManager.eventBuses();
             } else {
-                EventBus[] toEventBuses = new EventBus[busName.length];
-                for (int i = 0; i < busName.length; i++) {
-                    toEventBuses[i] = eventBusManager.getEventBus(busName[i]);
+                if (busName.length == 1) {
+                    eventBus = eventBusManager.getEventBus(busName[0]);
+                } else {
+                    EventBus[] toEventBuses = new EventBus[busName.length];
+                    for (int i = 0; i < busName.length; i++) {
+                        toEventBuses[i] = eventBusManager.getEventBus(busName[i]);
+                    }
+                    eventBus = new ComponentEventBus(toEventBuses);
                 }
-                toEventBus = new ComponentEventBus(toEventBuses);
             }
+            busCache.put(new ArrSwap<>(busName), eventBus);
         }
-        return toEventBus;
+        return eventBus;
     }
 
     private EventInfoExtractor getEventInfoExtractor() {
         return eventInfoExtractor;
     }
 
+    @Nullable
+    public EventBusManager getEventBusManager() {
+        if (eventBusManager == null) {
+            eventBusManager = beanFactory.getBean(EventBusManager.class);
+            Assert.notNull(eventBusManager, "no eventBusManager be found!");
+        }
+        return eventBusManager;
+    }
 
     @Override
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {

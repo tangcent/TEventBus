@@ -14,5 +14,7 @@ public interface SubscriberRegistry {
 
     void listen(SubscribeListener subscribeListener);
 
+    void findAllSubscribers(Consumer<Subscriber> subscriberConsumer);
+
     void findSubscribers(EventBus eventBus, Object event, Consumer<Subscriber> subscriberConsumer);
 }

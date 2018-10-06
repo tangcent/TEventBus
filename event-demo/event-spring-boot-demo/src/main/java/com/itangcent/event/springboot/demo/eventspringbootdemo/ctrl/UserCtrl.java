@@ -1,6 +1,7 @@
 package com.itangcent.event.springboot.demo.eventspringbootdemo.ctrl;
 
 import com.itangcent.event.springboot.demo.eventspringbootdemo.service.UserService;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -17,7 +18,7 @@ public class UserCtrl {
 
     @RequestMapping(value = "/login/{name}", method = RequestMethod.GET)
     public String login(@PathVariable(value = "name") String name) {
-        userService.login(name);
+        Assert.isTrue(userService.login(name), "success");
         return "hello:" + name;
     }
 

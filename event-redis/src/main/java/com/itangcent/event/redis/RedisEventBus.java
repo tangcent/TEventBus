@@ -9,9 +9,9 @@ import redis.clients.jedis.BinaryJedisPubSub;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.locks.Lock;
@@ -34,21 +34,27 @@ public class RedisEventBus extends AbstractEventBus {
         this(new DefaultSubscriberRegistry(), new ExecutorDispatcher(executorService), jedisPool);
     }
 
+    public RedisEventBus(SubscriberRegistry subscriberRegistry, ExecutorService executorService, JedisPool jedisPool) {
+        this(subscriberRegistry, new ExecutorDispatcher(executorService), jedisPool);
+    }
+
     public RedisEventBus(SubscriberRegistry subscriberRegistry, Dispatcher dispatcher, JedisPool jedisPool) {
         this.subscriberRegistry = subscriberRegistry;
         this.dispatcher = dispatcher;
         this.jedisPool = jedisPool;
         subscriberRegistry.listen(new RedisSubscribeListener());
+        subscriberRegistry.findAllSubscribers(subscribers::add);
+        flushListener();
     }
 
     public void setSubscriberExceptionHandler(SubscriberExceptionHandler subscriberExceptionHandler) {
         this.subscriberExceptionHandler = subscriberExceptionHandler;
     }
 
-    private ListenThread listenThread;//handle the register or unRegister
-//    Thread subscribeThread;//subscribe redis
+    //handle the register or unRegister
+    private ListenThread listenThread;
 
-    private List<Subscriber> subscribers = new ArrayList<>();
+    private Set<Subscriber> subscribers = new HashSet<>();
 
     protected class RedisSubscribeListener implements SubscribeListener {
 
@@ -95,13 +101,13 @@ public class RedisEventBus extends AbstractEventBus {
         try {
             byte[][] listenPatterns = getListenPatterns();
             if (listenThread == null) {
-                if (listenPatterns != null && listenPatterns.length != 0) {
+                if (listenPatterns.length != 0) {
                     listenThread = new ListenThread(listenPatterns);
                     listenThread.start();
                     listenThread.waitSubscribe();
                 }
             } else {
-                if (listenPatterns == null || listenPatterns.length == 0) {
+                if (listenPatterns.length == 0) {
                     listenThread.unsubscribe();
                     listenThread = null;
                 } else {
