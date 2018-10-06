@@ -1,13 +1,10 @@
 package com.itangcent.event.spring.core;
 
-import com.itangcent.event.spring.core.interceptor.EventBeanFactoryAdvisor;
 import org.springframework.aop.config.AopConfigUtils;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
-import org.springframework.beans.factory.support.RootBeanDefinition;
 
 public class EventBeanDefinitionRegistryPostProcessor implements BeanDefinitionRegistryPostProcessor {
     @Override

@@ -49,6 +49,11 @@ public class ConcurrencySubscriber implements DelegateSubscriber {
     }
 
     @Override
+    public String toString() {
+        return delegateSubscriber.toString();
+    }
+
+    @Override
     public Subscriber getDelegate() {
         return delegateSubscriber;
     }

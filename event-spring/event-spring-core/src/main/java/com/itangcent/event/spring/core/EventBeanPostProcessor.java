@@ -1,7 +1,7 @@
 package com.itangcent.event.spring.core;
 
 import com.itangcent.event.EventBus;
-import com.itangcent.event.annotation.Publish;
+import com.itangcent.event.Named;
 import com.itangcent.event.annotation.Subscribe;
 import com.itangcent.event.spring.utils.ReflectionUtils;
 import com.itangcent.event.utils.AnnotationUtils;
@@ -21,6 +21,9 @@ public class EventBeanPostProcessor implements BeanPostProcessor {
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         if (bean instanceof EventBus) {
+            if (bean instanceof Named) {
+                ((Named) bean).setName(beanName);
+            }
             eventBusManager.addEventBus(beanName, (EventBus) bean);
         }
 

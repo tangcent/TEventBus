@@ -47,4 +47,9 @@ public class FilteredSubscriber implements DelegateSubscriber, SubscriberFilter 
     public int hashCode() {
         return Objects.hash(delegateSubscriber);
     }
+
+    @Override
+    public String toString() {
+        return delegateSubscriber.toString();
+    }
 }

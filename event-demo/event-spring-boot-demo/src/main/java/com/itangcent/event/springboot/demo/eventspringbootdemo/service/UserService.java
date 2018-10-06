@@ -6,15 +6,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService {
 
-    //    @Publish(to = "local")
-    @Publish
+    @Publish(topic = "login")
     public String login(String name) {
         return name;
     }
 
-    @Publish
-    public String login2(String name) {
-        return name;
+    @Publish(event = "#name+','+#message", topic = "hi")
+    public void hi(String name, String message) {
     }
-
 }

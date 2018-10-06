@@ -1,15 +1,29 @@
 package com.itangcent.event.spring;
 
+import com.itangcent.event.spring.core.CompletedApplicationListener;
 import com.itangcent.event.spring.core.EventBeanDefinitionRegistryPostProcessor;
+import com.itangcent.event.spring.core.EventBeanPostProcessor;
 import com.itangcent.event.spring.core.interceptor.DefaultEventInfoExtractor;
 import com.itangcent.event.spring.core.interceptor.EventBeanFactoryAdvisor;
 import com.itangcent.event.spring.core.interceptor.EventInfoExtractor;
 import com.itangcent.event.spring.core.interceptor.EventInterceptor;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Role;
 
 public class EventBeanAutoConfiguration {
+
+    @Bean
+    public EventBeanPostProcessor eventBeanPostProcessor() {
+        return new EventBeanPostProcessor();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public CompletedApplicationListener completedApplicationListener() {
+        return new CompletedApplicationListener();
+    }
 
     @Bean
     public EventBeanDefinitionRegistryPostProcessor eventBeanDefinitionRegistryPostProcessor() {

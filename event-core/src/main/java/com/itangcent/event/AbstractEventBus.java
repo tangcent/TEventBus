@@ -6,7 +6,9 @@ import com.itangcent.event.utils.AnnotationUtils;
 import com.itangcent.event.utils.ObjectUtils;
 import com.itangcent.event.utils.RetryUtils;
 
-public abstract class AbstractEventBus implements EventBus {
+public abstract class AbstractEventBus implements EventBus, Named {
+
+    protected String name = getClass().getSimpleName();
 
     protected abstract SubscriberRegistry getSubscriberRegistry();
 
@@ -68,5 +70,20 @@ public abstract class AbstractEventBus implements EventBus {
                 subscriberExceptionHandler.handleException(exception, context);
             }
         }
+    }
+
+    @Override
+    public String name() {
+        return name;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public void setName(String name) {
+        this.name = name;
     }
 }

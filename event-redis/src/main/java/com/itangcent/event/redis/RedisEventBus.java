@@ -21,7 +21,6 @@ public class RedisEventBus extends AbstractEventBus {
     private SubscriberRegistry subscriberRegistry;
     private Dispatcher dispatcher;
     private SubscriberExceptionHandler subscriberExceptionHandler;
-    private String name = "RedisEventBus";
     private JedisPool jedisPool;
     private static final Serializer serializer = new JacksonSerializer();
 
@@ -216,11 +215,6 @@ public class RedisEventBus extends AbstractEventBus {
     @Override
     protected SubscriberExceptionHandler getSubscriberExceptionHandler() {
         return subscriberExceptionHandler;
-    }
-
-    @Override
-    public String name() {
-        return name;
     }
 
     @Override
