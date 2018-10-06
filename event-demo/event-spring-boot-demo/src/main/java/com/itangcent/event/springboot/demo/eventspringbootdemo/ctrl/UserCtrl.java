@@ -20,4 +20,10 @@ public class UserCtrl {
         userService.login(name);
         return "hello:" + name;
     }
+
+    @RequestMapping(value = "/hi/{name}/{message}", method = RequestMethod.GET)
+    public String login2(@PathVariable(value = "name") String name, @PathVariable(value = "message") String message) {
+        userService.hi(name, message);
+        return "hi:" + name + "," + message;
+    }
 }

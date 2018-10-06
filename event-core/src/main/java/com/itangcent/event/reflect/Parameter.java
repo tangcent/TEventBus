@@ -8,7 +8,6 @@ import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public final class Parameter implements AnnotatedElement {
 
@@ -99,7 +98,7 @@ public final class Parameter implements AnnotatedElement {
     // @Override on JDK8
     public <A extends Annotation> A[] getDeclaredAnnotationsByType(Class<A> annotationType) {
         return annotations.stream().filter(annotationType::isInstance)
-                .toArray(i->(A[]) Array.newInstance(annotationType,i));
+                .toArray(i -> (A[]) Array.newInstance(annotationType, i));
     }
 
     /**

@@ -1,11 +1,5 @@
 package com.itangcent.event.utils;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
-import java.text.Normalizer;
-import java.util.*;
-import java.util.regex.Pattern;
-
 public final class StringUtils {
 
     /**
@@ -17,6 +11,7 @@ public final class StringUtils {
 
     /**
      * The empty String {@code ""}.
+     *
      * @since 2.0
      */
     public static final String EMPTY = "";
@@ -25,7 +20,7 @@ public final class StringUtils {
      * A String for linefeed LF ("\n").
      *
      * @see <a href="http://docs.oracle.com/javase/specs/jls/se7/html/jls-3.html#jls-3.10.6">JLF: Escape Sequences
-     *      for Character and String Literals</a>
+     * for Character and String Literals</a>
      * @since 3.2
      */
     public static final String LF = "\n";
@@ -34,13 +29,14 @@ public final class StringUtils {
      * A String for carriage return CR ("\r").
      *
      * @see <a href="http://docs.oracle.com/javase/specs/jls/se7/html/jls-3.html#jls-3.10.6">JLF: Escape Sequences
-     *      for Character and String Literals</a>
+     * for Character and String Literals</a>
      * @since 3.2
      */
     public static final String CR = "\r";
 
     /**
      * Represents a failed index search.
+     *
      * @since 2.1
      */
     public static final int INDEX_NOT_FOUND = -1;
@@ -64,6 +60,7 @@ public final class StringUtils {
 
     // Empty checks
     //-----------------------------------------------------------------------
+
     /**
      * <p>Checks if a CharSequence is empty ("") or null.</p>
      *
@@ -79,7 +76,7 @@ public final class StringUtils {
      * It no longer trims the CharSequence.
      * That functionality is available in isBlank().</p>
      *
-     * @param cs  the CharSequence to check, may be null
+     * @param cs the CharSequence to check, may be null
      * @return {@code true} if the CharSequence is empty or null
      * @since 3.0 Changed signature from isEmpty(String) to isEmpty(CharSequence)
      */
@@ -98,7 +95,7 @@ public final class StringUtils {
      * StringUtils.isNotEmpty("  bob  ") = true
      * </pre>
      *
-     * @param cs  the CharSequence to check, may be null
+     * @param cs the CharSequence to check, may be null
      * @return {@code true} if the CharSequence is not empty and not null
      * @since 3.0 Changed signature from isNotEmpty(String) to isNotEmpty(CharSequence)
      */
@@ -121,7 +118,7 @@ public final class StringUtils {
      * StringUtils.isAnyEmpty(new String[]{""}) = true
      * </pre>
      *
-     * @param css  the CharSequences to check, may be null or empty
+     * @param css the CharSequences to check, may be null or empty
      * @return {@code true} if any of the CharSequences are empty or null
      * @since 3.2
      */
@@ -129,7 +126,7 @@ public final class StringUtils {
         if (ArrayUtils.isEmpty(css)) {
             return false;
         }
-        for (final CharSequence cs : css){
+        for (final CharSequence cs : css) {
             if (isEmpty(cs)) {
                 return true;
             }
@@ -152,7 +149,7 @@ public final class StringUtils {
      * StringUtils.isNoneEmpty("foo", "bar")     = true
      * </pre>
      *
-     * @param css  the CharSequences to check, may be null or empty
+     * @param css the CharSequences to check, may be null or empty
      * @return {@code true} if none of the CharSequences are empty or null
      * @since 3.2
      */
@@ -175,7 +172,7 @@ public final class StringUtils {
      * StringUtils.isAllEmpty("foo", "bar")     = false
      * </pre>
      *
-     * @param css  the CharSequences to check, may be null or empty
+     * @param css the CharSequences to check, may be null or empty
      * @return {@code true} if all of the CharSequences are empty or null
      * @since 3.6
      */
@@ -204,7 +201,7 @@ public final class StringUtils {
      * StringUtils.isBlank("  bob  ") = false
      * </pre>
      *
-     * @param cs  the CharSequence to check, may be null
+     * @param cs the CharSequence to check, may be null
      * @return {@code true} if the CharSequence is null, empty or whitespace only
      * @since 2.0
      * @since 3.0 Changed signature from isBlank(String) to isBlank(CharSequence)
@@ -235,9 +232,9 @@ public final class StringUtils {
      * StringUtils.isNotBlank("  bob  ") = true
      * </pre>
      *
-     * @param cs  the CharSequence to check, may be null
+     * @param cs the CharSequence to check, may be null
      * @return {@code true} if the CharSequence is
-     *  not empty and not null and not whitespace only
+     * not empty and not null and not whitespace only
      * @since 2.0
      * @since 3.0 Changed signature from isNotBlank(String) to isNotBlank(CharSequence)
      */
@@ -263,7 +260,7 @@ public final class StringUtils {
      * StringUtils.isAnyBlank("foo", "bar")     = false
      * </pre>
      *
-     * @param css  the CharSequences to check, may be null or empty
+     * @param css the CharSequences to check, may be null or empty
      * @return {@code true} if any of the CharSequences are empty or null or whitespace only
      * @since 3.2
      */
@@ -271,7 +268,7 @@ public final class StringUtils {
         if (ArrayUtils.isEmpty(css)) {
             return false;
         }
-        for (final CharSequence cs : css){
+        for (final CharSequence cs : css) {
             if (isBlank(cs)) {
                 return true;
             }
@@ -297,7 +294,7 @@ public final class StringUtils {
      * StringUtils.isNoneBlank("foo", "bar")     = true
      * </pre>
      *
-     * @param css  the CharSequences to check, may be null or empty
+     * @param css the CharSequences to check, may be null or empty
      * @return {@code true} if none of the CharSequences are empty or null or whitespace only
      * @since 3.2
      */
@@ -322,7 +319,7 @@ public final class StringUtils {
      * StringUtils.isAllBlank(new String[] {})  = true
      * </pre>
      *
-     * @param css  the CharSequences to check, may be null or empty
+     * @param css the CharSequences to check, may be null or empty
      * @return {@code true} if all of the CharSequences are empty or null or whitespace only
      * @since 3.6
      */
@@ -340,6 +337,7 @@ public final class StringUtils {
 
     // Trim
     //-----------------------------------------------------------------------
+
     /**
      * <p>Removes control characters (char &lt;= 32) from both
      * ends of this String, handling {@code null} by returning
@@ -353,7 +351,7 @@ public final class StringUtils {
      * StringUtils.trim("    abc    ") = "abc"
      * </pre>
      *
-     * @param str  the String to be trimmed, may be null
+     * @param str the String to be trimmed, may be null
      * @return the trimmed string, {@code null} if null String input
      */
     public static String trim(final String str) {
@@ -375,9 +373,9 @@ public final class StringUtils {
      * StringUtils.trimToNull("    abc    ") = "abc"
      * </pre>
      *
-     * @param str  the String to be trimmed, may be null
+     * @param str the String to be trimmed, may be null
      * @return the trimmed String,
-     *  {@code null} if only chars &lt;= 32, empty or null String input
+     * {@code null} if only chars &lt;= 32, empty or null String input
      * @since 2.0
      */
     public static String trimToNull(final String str) {
@@ -401,7 +399,7 @@ public final class StringUtils {
      * StringUtils.trimToEmpty("    abc    ") = "abc"
      * </pre>
      *
-     * @param str  the String to be trimmed, may be null
+     * @param str the String to be trimmed, may be null
      * @return the trimmed String, or an empty String if {@code null} input
      * @since 2.0
      */
@@ -415,13 +413,13 @@ public final class StringUtils {
      *
      * <p>Specifically:</p>
      * <ul>
-     *   <li>If {@code str} is less than {@code maxWidth} characters
-     *       long, return it.</li>
-     *   <li>Else truncate it to {@code substring(str, 0, maxWidth)}.</li>
-     *   <li>If {@code maxWidth} is less than {@code 0}, throw an
-     *       {@code IllegalArgumentException}.</li>
-     *   <li>In no case will it return a String of length greater than
-     *       {@code maxWidth}.</li>
+     * <li>If {@code str} is less than {@code maxWidth} characters
+     * long, return it.</li>
+     * <li>Else truncate it to {@code substring(str, 0, maxWidth)}.</li>
+     * <li>If {@code maxWidth} is less than {@code 0}, throw an
+     * {@code IllegalArgumentException}.</li>
+     * <li>In no case will it return a String of length greater than
+     * {@code maxWidth}.</li>
      * </ul>
      *
      * <pre>
@@ -435,8 +433,8 @@ public final class StringUtils {
      * StringUtils.truncate("abcdefg", -1) = throws an IllegalArgumentException
      * </pre>
      *
-     * @param str  the String to truncate, may be null
-     * @param maxWidth  maximum length of result String, must be positive
+     * @param str      the String to truncate, may be null
+     * @param maxWidth maximum length of result String, must be positive
      * @return truncated String, {@code null} if null String input
      * @since 3.5
      */
@@ -453,15 +451,15 @@ public final class StringUtils {
      *
      * <p>Specifically:</p>
      * <ul>
-     *   <li>If {@code str} is less than {@code maxWidth} characters
-     *       long, return it.</li>
-     *   <li>Else truncate it to {@code substring(str, offset, maxWidth)}.</li>
-     *   <li>If {@code maxWidth} is less than {@code 0}, throw an
-     *       {@code IllegalArgumentException}.</li>
-     *   <li>If {@code offset} is less than {@code 0}, throw an
-     *       {@code IllegalArgumentException}.</li>
-     *   <li>In no case will it return a String of length greater than
-     *       {@code maxWidth}.</li>
+     * <li>If {@code str} is less than {@code maxWidth} characters
+     * long, return it.</li>
+     * <li>Else truncate it to {@code substring(str, offset, maxWidth)}.</li>
+     * <li>If {@code maxWidth} is less than {@code 0}, throw an
+     * {@code IllegalArgumentException}.</li>
+     * <li>If {@code offset} is less than {@code 0}, throw an
+     * {@code IllegalArgumentException}.</li>
+     * <li>In no case will it return a String of length greater than
+     * {@code maxWidth}.</li>
      * </ul>
      *
      * <pre>
@@ -497,9 +495,9 @@ public final class StringUtils {
      * StringUtils.truncate("abcdefghij", -2, 4) = throws an IllegalArgumentException
      * </pre>
      *
-     * @param str  the String to check, may be null
-     * @param offset  left edge of source String
-     * @param maxWidth  maximum length of result String, must be positive
+     * @param str      the String to check, may be null
+     * @param offset   left edge of source String
+     * @param maxWidth maximum length of result String, must be positive
      * @return truncated String, {@code null} if null String input
      * @since 3.5
      */
@@ -525,7 +523,7 @@ public final class StringUtils {
 
 
     public static String join(Object[] array, char separator) {
-        return array == null ? null : join((Object[])array, separator, 0, array.length);
+        return array == null ? null : join((Object[]) array, separator, 0, array.length);
     }
 
     public static String join(Object[] array, char separator, int startIndex, int endIndex) {
@@ -538,7 +536,7 @@ public final class StringUtils {
             } else {
                 StringBuilder buf = new StringBuilder(noOfItems * 16);
 
-                for(int i = startIndex; i < endIndex; ++i) {
+                for (int i = startIndex; i < endIndex; ++i) {
                     if (i > startIndex) {
                         buf.append(separator);
                     }

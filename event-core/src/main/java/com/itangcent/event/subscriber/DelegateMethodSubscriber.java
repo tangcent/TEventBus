@@ -69,7 +69,7 @@ public class DelegateMethodSubscriber implements Subscriber {
     @Override
     public String toString() {
         return MessageFormat.format("'{'delegate={0}, method={1}, eventType={2}'}'",
-                 delegate, ReflectionUtils.buildMethod(method), eventType);
+                delegate, ReflectionUtils.buildMethod(method), eventType);
     }
 
     private MethodInvoker invokerOf(Method method) {

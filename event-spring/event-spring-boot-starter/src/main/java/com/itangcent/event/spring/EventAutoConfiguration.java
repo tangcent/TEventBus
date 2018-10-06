@@ -7,14 +7,12 @@ import com.itangcent.event.SubscriberRegistry;
 import com.itangcent.event.local.LocalEventBus;
 import com.itangcent.event.spring.core.CompletedApplicationListener;
 import com.itangcent.event.spring.core.DefaultEventBusManager;
-import com.itangcent.event.spring.core.EventBeanPostProcessor;
 import com.itangcent.event.spring.core.EventBusManager;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
-import javax.annotation.Resource;
 import java.util.Collections;
 import java.util.concurrent.Executors;
 
@@ -27,13 +25,10 @@ public class EventAutoConfiguration {
         this.eventAutoProperties = eventAutoProperties;
     }
 
-    @Resource
-    EventBusManager eventBusManager;
-
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnProperty(value = "tevent.autoRegistry", matchIfMissing = true)
-    public SubscriberRegistry autoRegistry() {
+    public SubscriberRegistry autoRegistry(EventBusManager eventBusManager) {
         DefaultSubscriberRegistry autoSubscriberRegistry = new DefaultSubscriberRegistry();
         eventBusManager.setSubscriberRegistries(Collections.singletonList(autoSubscriberRegistry));
         return autoSubscriberRegistry;
@@ -42,19 +37,13 @@ public class EventAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnProperty(value = "tevent.localEvent", matchIfMissing = true)
-    public EventBus local() {
+    public EventBus local(EventBusManager eventBusManager) {
         int pool = eventAutoProperties.getLocalThread();
         if (pool == -1) {
-            return new LocalEventBus(autoRegistry(), new ExecutorDispatcher());
+            return new LocalEventBus(autoRegistry(eventBusManager), new ExecutorDispatcher());
         } else {
-            return new LocalEventBus(autoRegistry(), new ExecutorDispatcher(Executors.newFixedThreadPool(pool)));
+            return new LocalEventBus(autoRegistry(eventBusManager), new ExecutorDispatcher(Executors.newFixedThreadPool(pool)));
         }
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public CompletedApplicationListener completedApplicationListener() {
-        return new CompletedApplicationListener();
     }
 
     @Bean

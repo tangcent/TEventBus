@@ -3,7 +3,6 @@ package com.itangcent.event.spring.core;
 import com.itangcent.event.EventBus;
 import com.itangcent.event.SubscriberRegistry;
 
-import java.util.Collection;
 import java.util.List;
 
 public interface EventBusManager {
