@@ -2,6 +2,7 @@ package com.itangcent.event.spring.core.interceptor;
 
 import com.itangcent.event.annotation.Publish;
 import com.itangcent.event.annotation.Publishes;
+import com.itangcent.event.utils.ReflectionUtils;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 
@@ -22,31 +23,27 @@ public class DefaultEventInfoExtractor implements EventInfoExtractor {
 
         Method specificMethod = AopUtils.getMostSpecificMethod(method, targetClass);
 
-        String key = com.itangcent.event.utils.ReflectionUtils.buildKey(targetClass, specificMethod);
+        String key = ReflectionUtils.buildKey(targetClass, specificMethod);
         Collection<EventInfo> eventInfos = this.eventInfoCache.get(key);
 
         if (eventInfos != null) {
-            return (eventInfos != NULL ? eventInfos : null);
+            return eventInfos != NULL ? eventInfos : null;
         } else {
-            eventInfos = computeEventInfos(specificMethod, targetClass);
-            if (eventInfos != null) {
-                this.eventInfoCache.put(key, eventInfos);
-            } else {
-                this.eventInfoCache.put(key, NULL);
-            }
+            eventInfos = computeEventInfos(specificMethod);
+            this.eventInfoCache.put(key, eventInfos != null ? eventInfos : NULL);
             return eventInfos;
         }
     }
 
-    private Collection<EventInfo> computeEventInfos(Method method, Class<?> targetClass) {
+    private Collection<EventInfo> computeEventInfos(Method method) {
         Publishes publishesAnn = AnnotationUtils.findAnnotation(method, Publishes.class);
         if (publishesAnn != null) {
             Publish[] publishes = publishesAnn.value();
-            List<EventInfo> eventInfos = new ArrayList<>(publishes.length);
+            List<EventInfo> eventInfoList = new ArrayList<>(publishes.length);
             for (Publish publish : publishes) {
-                eventInfos.add(extractInfo(publish));
+                eventInfoList.add(extractInfo(publish));
             }
-            return eventInfos;
+            return eventInfoList;
         }
         Publish publish = AnnotationUtils.findAnnotation(method, Publish.class);
 

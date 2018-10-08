@@ -3,6 +3,7 @@ package com.itangcent.event.springboot.demo.eventspringbootdemo.service;
 import com.itangcent.event.annotation.Subscribe;
 import org.springframework.stereotype.Service;
 
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -14,13 +15,15 @@ public class LoggedService {
         System.out.println(userName + " login success!");
     }
 
-    @Subscribe(topic = "hi")
+    @Subscribe(topic = "hi", on = "localEventBus")
     public void onHi(String userName) {
         System.out.println("hi," + userName);
     }
 
     @Subscribe(topic = "log", on = "redisEventBus")
     public void onLog(String log) {
-        System.out.println("[" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(new Date()) + "]\t" + log);
+        System.out.println(MessageFormat.format("[{0}]\t{1}",
+                new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(new Date()),
+                log));
     }
 }

@@ -5,7 +5,6 @@ import com.itangcent.event.EventBus;
 import com.itangcent.event.ExecutorDispatcher;
 import com.itangcent.event.SubscriberRegistry;
 import com.itangcent.event.local.LocalEventBus;
-import com.itangcent.event.spring.core.CompletedApplicationListener;
 import com.itangcent.event.spring.core.DefaultEventBusManager;
 import com.itangcent.event.spring.core.EventBusManager;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -16,12 +15,12 @@ import org.springframework.context.annotation.Bean;
 import java.util.Collections;
 import java.util.concurrent.Executors;
 
-@EnableConfigurationProperties({EventAutoProperties.class})
+@EnableConfigurationProperties({TEventProperties.class})
 public class EventAutoConfiguration {
 
-    private EventAutoProperties eventAutoProperties;
+    private TEventProperties eventAutoProperties;
 
-    public EventAutoConfiguration(EventAutoProperties eventAutoProperties) {
+    public EventAutoConfiguration(TEventProperties eventAutoProperties) {
         this.eventAutoProperties = eventAutoProperties;
     }
 
@@ -37,7 +36,7 @@ public class EventAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnProperty(value = "tevent.localEvent", matchIfMissing = true)
-    public EventBus local(EventBusManager eventBusManager) {
+    public EventBus localEventBus(EventBusManager eventBusManager) {
         int pool = eventAutoProperties.getLocalThread();
         if (pool == -1) {
             return new LocalEventBus(autoRegistry(eventBusManager), new ExecutorDispatcher());

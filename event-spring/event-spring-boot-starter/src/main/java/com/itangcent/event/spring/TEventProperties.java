@@ -4,7 +4,7 @@ package com.itangcent.event.spring;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "tevent")
-public class EventAutoProperties {
+public class TEventProperties {
 
     private boolean localEvent = true;
 

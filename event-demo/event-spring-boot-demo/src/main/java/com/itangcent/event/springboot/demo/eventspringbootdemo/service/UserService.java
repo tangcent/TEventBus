@@ -14,7 +14,7 @@ public class UserService {
     }
 
     @Publish(event = "#name+','+#message", to = "redisEventBus", topic = "log", stage = Stage.BEFORE)
-    @Publish(event = "#name", topic = "hi", stage = Stage.AFTER)
+    @Publish(event = "#name", to = "localEventBus", topic = "hi", stage = Stage.AFTER)
     public void hi(String name, String message) {
         //some thing
     }

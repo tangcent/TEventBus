@@ -15,6 +15,7 @@
     <modules>
         <module>event-spring-core</module>
         <module>event-spring-boot-starter</module>
+        <module>event-redis-spring-boot-starter</module>
     </modules>
 
 

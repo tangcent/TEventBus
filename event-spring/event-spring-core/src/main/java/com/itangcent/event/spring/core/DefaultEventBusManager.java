@@ -4,7 +4,6 @@ import com.itangcent.event.EventBus;
 import com.itangcent.event.SubscriberRegistry;
 import com.itangcent.event.utils.Assert;
 import com.itangcent.event.utils.Collections;
-import com.itangcent.event.utils.Runs;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -104,8 +103,12 @@ public class DefaultEventBusManager implements BeanFactoryAware, EventBusManager
 
         @Override
         public void run() {
-            Object eventBus = Runs.safeCall(() -> beanFactory.getBean(name), null);
-            Assert.notNull(eventBus, "EventBus named [%s] not present!", name);
+            Object eventBus;
+            try {
+                eventBus = beanFactory.getBean(name);
+            } catch (BeansException e) {
+                throw new NoSuchBeanDefinitionException(name, "EventBus named [" + name + "] not present!");
+            }
             Assert.isInstanceOf(EventBus.class, eventBus, "bean named [%s] should be a EventBus!", name);
             delegateEventBus.setDelegate((EventBus) eventBus);
         }

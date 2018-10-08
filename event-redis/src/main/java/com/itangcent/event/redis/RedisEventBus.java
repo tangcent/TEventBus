@@ -8,6 +8,7 @@ import com.itangcent.event.utils.Runs;
 import redis.clients.jedis.BinaryJedisPubSub;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import redis.clients.util.Pool;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -21,24 +22,24 @@ public class RedisEventBus extends AbstractEventBus {
     private SubscriberRegistry subscriberRegistry;
     private Dispatcher dispatcher;
     private SubscriberExceptionHandler subscriberExceptionHandler;
-    private JedisPool jedisPool;
+    private Pool<Jedis> jedisPool;
     private static final Serializer serializer = new JacksonSerializer();
 
-    public RedisEventBus(JedisPool jedisPool) {
+    public RedisEventBus(Pool<Jedis> jedisPool) {
         this(new DefaultSubscriberRegistry(),
                 new ExecutorDispatcher(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() + 1)),
                 jedisPool);
     }
 
-    public RedisEventBus(ExecutorService executorService, JedisPool jedisPool) {
+    public RedisEventBus(ExecutorService executorService,  Pool<Jedis> jedisPool) {
         this(new DefaultSubscriberRegistry(), new ExecutorDispatcher(executorService), jedisPool);
     }
 
-    public RedisEventBus(SubscriberRegistry subscriberRegistry, ExecutorService executorService, JedisPool jedisPool) {
+    public RedisEventBus(SubscriberRegistry subscriberRegistry, ExecutorService executorService,  Pool<Jedis> jedisPool) {
         this(subscriberRegistry, new ExecutorDispatcher(executorService), jedisPool);
     }
 
-    public RedisEventBus(SubscriberRegistry subscriberRegistry, Dispatcher dispatcher, JedisPool jedisPool) {
+    public RedisEventBus(SubscriberRegistry subscriberRegistry, Dispatcher dispatcher,  Pool<Jedis> jedisPool) {
         this.subscriberRegistry = subscriberRegistry;
         this.dispatcher = dispatcher;
         this.jedisPool = jedisPool;

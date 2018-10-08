@@ -13,7 +13,11 @@ public class CompletedApplicationListener implements ApplicationListener<Context
     private Queue<Runnable> refreshTasks = new LinkedBlockingQueue<>();
 
     public void addRefreshTasks(Runnable refreshTask) {
-        this.refreshTasks.add(refreshTask);
+        if (init) {
+            refreshTask.run();
+        } else {
+            this.refreshTasks.add(refreshTask);
+        }
     }
 
     @Override
