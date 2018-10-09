@@ -14,9 +14,9 @@ public class LocalEventBus extends AbstractEventBus {
         dispatcher = ImmediateDispatcher.instance();
     }
 
-    public LocalEventBus(ExecutorService executorService) {
+    public LocalEventBus(int thread) {
         subscriberRegistry = new DefaultSubscriberRegistry();
-        dispatcher = new ExecutorDispatcher(executorService);
+        dispatcher = new ExecutorDispatcher(thread);
     }
 
     public LocalEventBus(SubscriberRegistry subscriberRegistry, Dispatcher dispatcher) {

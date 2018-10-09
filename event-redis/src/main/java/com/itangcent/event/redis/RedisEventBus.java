@@ -7,14 +7,12 @@ import com.itangcent.event.subscriber.Subscriber;
 import com.itangcent.event.utils.Runs;
 import redis.clients.jedis.BinaryJedisPubSub;
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
 import redis.clients.util.Pool;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -27,16 +25,16 @@ public class RedisEventBus extends AbstractEventBus {
 
     public RedisEventBus(Pool<Jedis> jedisPool) {
         this(new DefaultSubscriberRegistry(),
-                new ExecutorDispatcher(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() + 1)),
+                new ExecutorDispatcher(Runtime.getRuntime().availableProcessors() + 1),
                 jedisPool);
     }
 
-    public RedisEventBus(ExecutorService executorService,  Pool<Jedis> jedisPool) {
-        this(new DefaultSubscriberRegistry(), new ExecutorDispatcher(executorService), jedisPool);
+    public RedisEventBus(int thread,  Pool<Jedis> jedisPool) {
+        this(new DefaultSubscriberRegistry(), new ExecutorDispatcher(thread), jedisPool);
     }
 
-    public RedisEventBus(SubscriberRegistry subscriberRegistry, ExecutorService executorService,  Pool<Jedis> jedisPool) {
-        this(subscriberRegistry, new ExecutorDispatcher(executorService), jedisPool);
+    public RedisEventBus(SubscriberRegistry subscriberRegistry, int thread,  Pool<Jedis> jedisPool) {
+        this(subscriberRegistry, new ExecutorDispatcher(thread), jedisPool);
     }
 
     public RedisEventBus(SubscriberRegistry subscriberRegistry, Dispatcher dispatcher,  Pool<Jedis> jedisPool) {

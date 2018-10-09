@@ -8,9 +8,9 @@ import java.util.logging.Logger;
 
 public abstract class LoggedEventExceptionHandle implements SubscriberExceptionHandler {
 
-    static final LoggedEventExceptionHandle TRACED_LOGGED_EVENT_EXCEPTION_HANDLE = new TracedLoggedEventExceptionHandle();
+    private static final LoggedEventExceptionHandle TRACED_LOGGED_EVENT_EXCEPTION_HANDLE = new TracedLoggedEventExceptionHandle();
 
-    static final LoggedEventExceptionHandle MESSAGE_LOGGED_EVENT_EXCEPTION_HANDLE = new MessageLoggedEventExceptionHandle();
+    private static final LoggedEventExceptionHandle MESSAGE_LOGGED_EVENT_EXCEPTION_HANDLE = new MessageLoggedEventExceptionHandle();
 
     public static LoggedEventExceptionHandle traced() {
         return TRACED_LOGGED_EVENT_EXCEPTION_HANDLE;

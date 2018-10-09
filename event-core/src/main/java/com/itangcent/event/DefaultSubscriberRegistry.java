@@ -34,6 +34,10 @@ public class DefaultSubscriberRegistry extends AbstractSubscriberRegistry {
         String[] subscribeEventBus = subscribe.on();
         Subscriber subscriber = new DelegateMethodSubscriber(subscriberBean, subscriberMethod.getMethod(), subscriberMethod.getEventType());
 
+        if (subscribe.priority() != Thread.NORM_PRIORITY) {
+            subscriber = new PrioritizedSubscriber(subscriber, subscribe.priority());
+        }
+
         if (subscribe.concurrency() > 0) {
             subscriber = new ConcurrencySubscriber(subscriber, subscribe.concurrency());
         }

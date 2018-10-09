@@ -20,7 +20,7 @@ public class LocalEventBusTest {
     @Test
     void test() {
 
-        LocalEventBus localEventBus = new LocalEventBus(Executors.newFixedThreadPool(4));
+        LocalEventBus localEventBus = new LocalEventBus(4);
         localEventBus.setSubscriberExceptionHandler(LoggedEventExceptionHandle.message());
         Subscriber subscriber = new Subscriber();
         localEventBus.register(subscriber);

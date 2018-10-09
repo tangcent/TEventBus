@@ -15,7 +15,7 @@ public class LoggedService {
         System.out.println(userName + " login success!");
     }
 
-    @Subscribe(topic = "hi", on = "localEventBus")
+    @Subscribe(topic = "hi", on = "localEventBus", priority = Thread.MAX_PRIORITY)
     public void onHi(String userName) {
         System.out.println("hi," + userName);
     }
