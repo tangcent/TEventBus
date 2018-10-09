@@ -26,7 +26,7 @@ public class ExecutorDispatcher extends AbstractDispatcher {
 
     @Override
     public void dispatch(Object event, Subscriber subscriber, SubscriberExceptionHandler subscriberExceptionHandler) {
-        executorService.submit(new PrioritizedRunnable(getPriority(subscriber)) {
+        executorService.execute(new PrioritizedRunnable(getPriority(subscriber)) {
             @Override
             public void run() {
                 dispatchEvents(event, subscriber, subscriberExceptionHandler);
