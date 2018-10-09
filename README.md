@@ -10,7 +10,7 @@
             ...
         }
         
-        @Subscribe(topic = "topic")
+        @Subscribe(topic = "topic", on = "localEventBus", concurrency = 3, priority = Thread.MAX_PRIORITY)
         private void listenTopicMethod(String event) {
             ...
         }
@@ -28,7 +28,7 @@
 # @Publish
 
 ```java
-        @Publish(to = "busName", event = "#arg1+','+#arg2", topic = "topic")
+        @Publish(to = "busName", event = "#arg1+','+#arg2", to = "localEventBus", topic = "topic", stage = Stage.AFTER)
         public void hi(String arg1, String arg2) {
         }
 ```
