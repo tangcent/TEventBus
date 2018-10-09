@@ -41,7 +41,7 @@ public class EventAutoConfiguration {
         if (pool == -1) {
             return new LocalEventBus(autoRegistry(eventBusManager), new ExecutorDispatcher());
         } else {
-            return new LocalEventBus(autoRegistry(eventBusManager), new ExecutorDispatcher(Executors.newFixedThreadPool(pool)));
+            return new LocalEventBus(autoRegistry(eventBusManager), new ExecutorDispatcher(pool));
         }
     }
 

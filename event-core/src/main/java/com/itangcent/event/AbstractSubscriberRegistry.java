@@ -186,9 +186,6 @@ public abstract class AbstractSubscriberRegistry implements SubscriberRegistry {
         return collection;
     }
 
-    /**
-     * todo:support
-     */
     protected Subscriber buildSubscriber(Object subscriber, SubscriberMethod subscriberMethod) {
         return new DelegateMethodSubscriber(subscriber, subscriberMethod.getMethod(), subscriberMethod.getEventType());
     }

@@ -22,4 +22,12 @@ public @interface Subscribe {
      * Sets the concurrency level that will be used by dispatcher
      */
     int concurrency() default -1;
+
+    /**
+     * support:
+     * highest->Integer.MAX_VALUE/0x7fffffff/2147483647
+     * lowest->Integer.MIN_VALUE/0x80000000/-2147483648
+     * but [Thread.MIN_PRIORITY/Thread.NORM_PRIORITY/Thread.MAX_PRIORITY] is recommended instead
+     */
+    int priority() default Thread.NORM_PRIORITY;
 }

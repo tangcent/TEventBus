@@ -100,7 +100,7 @@ public class EventRedisAutoConfiguration {
             return new RedisEventBus(subscriberRegistry, new ExecutorDispatcher(), jedisPool);
         } else {
             return new RedisEventBus(subscriberRegistry,
-                    new ExecutorDispatcher(Executors.newFixedThreadPool(eventRedisProperties.getEventThread())),
+                    new ExecutorDispatcher(eventRedisProperties.getEventThread()),
                     jedisPool);
         }
     }
