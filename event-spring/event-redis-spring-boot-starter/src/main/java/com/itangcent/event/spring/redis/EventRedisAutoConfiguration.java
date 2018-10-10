@@ -3,6 +3,8 @@ package com.itangcent.event.spring.redis;
 import com.itangcent.event.EventBus;
 import com.itangcent.event.ExecutorDispatcher;
 import com.itangcent.event.SubscriberRegistry;
+import com.itangcent.event.redis.JedisPoolClient;
+import com.itangcent.event.redis.RedisClient;
 import com.itangcent.event.redis.RedisEventBus;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -11,21 +13,17 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
-import redis.clients.jedis.*;
-import redis.clients.util.Pool;
+import redis.clients.jedis.HostAndPort;
+import redis.clients.jedis.JedisCluster;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisSentinelPool;
 
-import javax.annotation.Resource;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.Executors;
 
 @EnableConfigurationProperties({EventRedisProperties.class})
 public class EventRedisAutoConfiguration {
-
-    @Resource
-    private Environment env;
 
     private EventRedisProperties eventRedisProperties;
 
@@ -57,16 +55,16 @@ public class EventRedisAutoConfiguration {
             }
         }
 
-        Pool<Jedis> jedisPool = null;
+        RedisClient redisClient = null;
         if (eventRedisProperties.getSentinel() != null) {
             RedisProperties.Sentinel sentinel = eventRedisProperties.getSentinel();
-            jedisPool = new JedisSentinelPool(sentinel.getMaster(),
+            redisClient = new JedisPoolClient(new JedisSentinelPool(sentinel.getMaster(),
                     new HashSet<>(sentinel.getNodes()),
                     poolConfig,
                     (int) eventRedisProperties.getTimeout().toMillis(),
                     eventRedisProperties.getPassword(),
                     eventRedisProperties.getDatabase()
-            );
+            ));
         } else if (eventRedisProperties.getCluster() != null) {
             RedisProperties.Cluster cluster = eventRedisProperties.getCluster();
 
@@ -74,34 +72,33 @@ public class EventRedisAutoConfiguration {
             for (String node : cluster.getNodes()) {
                 nodes.add(HostAndPort.parseString(node));
             }
-            JedisCluster jedisCluster = new JedisCluster(nodes,
+            redisClient = new JedisClusterClient(new JedisCluster(nodes,
                     (int) eventRedisProperties.getTimeout().toMillis(),
                     cluster.getMaxRedirects(),
-                    poolConfig);
-            //todo:jedisCluster to pool
+                    poolConfig));
         } else if (StringUtils.hasText(eventRedisProperties.getUrl())) {
             HostAndPort hostAndPort = HostAndPort.parseString(eventRedisProperties.getUrl());
-            jedisPool = new JedisPool(poolConfig,
+            redisClient = new JedisPoolClient(new JedisPool(poolConfig,
                     hostAndPort.getHost(),
                     hostAndPort.getPort(),
                     (int) eventRedisProperties.getTimeout().toMillis(),
                     eventRedisProperties.getPassword(),
-                    eventRedisProperties.getDatabase());
+                    eventRedisProperties.getDatabase()));
         } else {
-            jedisPool = new JedisPool(poolConfig,
+            redisClient = new JedisPoolClient(new JedisPool(poolConfig,
                     eventRedisProperties.getHost(),
                     eventRedisProperties.getPort(),
                     (int) eventRedisProperties.getTimeout().toMillis(),
                     eventRedisProperties.getPassword(),
-                    eventRedisProperties.getDatabase());
+                    eventRedisProperties.getDatabase()));
         }
 
         if (eventRedisProperties.getEventThread() == -1) {
-            return new RedisEventBus(subscriberRegistry, new ExecutorDispatcher(), jedisPool);
+            return new RedisEventBus(subscriberRegistry, new ExecutorDispatcher(), redisClient);
         } else {
             return new RedisEventBus(subscriberRegistry,
                     new ExecutorDispatcher(eventRedisProperties.getEventThread()),
-                    jedisPool);
+                    redisClient);
         }
     }
 }

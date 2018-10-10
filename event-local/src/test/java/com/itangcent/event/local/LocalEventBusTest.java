@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 
 import java.text.MessageFormat;
 import java.util.Random;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -70,7 +69,7 @@ public class LocalEventBusTest {
         }
 
         @Retry(times = 3)
-        @Subscribe(topic = "oldUser", concurrency = 3)
+        @Subscribe(topic = "oldUser", concurrency = 3, priority = Thread.MAX_PRIORITY)
         private void listenOldUser(String name) {
             if (random.nextBoolean()) {
                 throw new IllegalArgumentException("error hello old user:" + name);
