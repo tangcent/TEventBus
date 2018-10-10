@@ -26,7 +26,7 @@ public class RedisEventBusTest {
             Subscriber subscriber = new Subscriber("hostA");
             redisEventBus.register(subscriber);
             Runs.uncheckDo(() -> Thread.sleep(TimeUnit.SECONDS.toMillis(10)));
-            redisEventBus.shutdown();
+//            redisEventBus.shutdown();
         }).start();
 
         //hostB subscribe Thread
@@ -36,7 +36,7 @@ public class RedisEventBusTest {
             Subscriber subscriber = new Subscriber("hostB");
             redisEventBus.register(subscriber);
             Runs.uncheckDo(() -> Thread.sleep(TimeUnit.SECONDS.toMillis(10)));
-            redisEventBus.shutdown();
+//            redisEventBus.shutdown();
         }).start();
 
         Runs.uncheckDo(() -> Thread.sleep(TimeUnit.SECONDS.toMillis(2)));
@@ -55,7 +55,7 @@ public class RedisEventBusTest {
             redisEventBus.post("Jeremiah");
             redisEventBus.post("Emily");
             Runs.uncheckDo(() -> Thread.sleep(TimeUnit.SECONDS.toMillis(10)));
-            redisEventBus.shutdown();
+//            redisEventBus.shutdown();
         }).start();
 
         Runs.uncheckDo(() -> Thread.sleep(TimeUnit.SECONDS.toMillis(10)));

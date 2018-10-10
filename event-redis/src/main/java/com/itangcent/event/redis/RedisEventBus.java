@@ -46,7 +46,7 @@ public class RedisEventBus extends AbstractEventBus {
         this.redisClient = new JedisPoolClient(jedisPool);
         subscriberRegistry.listen(new RedisSubscribeListener());
         subscriberRegistry.findAllSubscribers(subscribers::add);
-        flushListener();
+        init();
     }
 
     public RedisEventBus(SubscriberRegistry subscriberRegistry, int thread, RedisClient redisClient) {
@@ -59,15 +59,23 @@ public class RedisEventBus extends AbstractEventBus {
         this.redisClient = redisClient;
         subscriberRegistry.listen(new RedisSubscribeListener());
         subscriberRegistry.findAllSubscribers(subscribers::add);
-        flushListener();
+        init();
     }
 
     public void setSubscriberExceptionHandler(SubscriberExceptionHandler subscriberExceptionHandler) {
         this.subscriberExceptionHandler = subscriberExceptionHandler;
     }
 
+    private void init() {
+        flushListener();
+        shutdownHook = new Thread(this::doShutdown);
+        Runtime.getRuntime().addShutdownHook(shutdownHook);
+    }
+
     //handle the register or unRegister
     private ListenThread listenThread;
+
+    private Thread shutdownHook;
 
     private Set<Subscriber> subscribers = new HashSet<>();
 
@@ -136,7 +144,11 @@ public class RedisEventBus extends AbstractEventBus {
 
     private Lock lock = new ReentrantLock();
 
+
     private class ListenThread extends Thread {
+        public ListenThread() {
+            this.setDaemon(true);
+        }
 
         private Lock lock = new ReentrantLock();
         volatile byte[][] listenPatterns;
@@ -215,6 +227,19 @@ public class RedisEventBus extends AbstractEventBus {
     }
 
     public void shutdown() {
+        lock.lock();
+        try {
+            doShutdown();
+            if (shutdownHook != null) {
+                Runtime.getRuntime().removeShutdownHook(shutdownHook);
+                shutdownHook = null;
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    private void doShutdown() {
         lock.lock();
         try {
             if (this.listenThread != null) {
