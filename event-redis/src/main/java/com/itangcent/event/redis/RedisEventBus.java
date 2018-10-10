@@ -12,7 +12,6 @@ import redis.clients.util.Pool;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -20,7 +19,7 @@ public class RedisEventBus extends AbstractEventBus {
     private SubscriberRegistry subscriberRegistry;
     private Dispatcher dispatcher;
     private SubscriberExceptionHandler subscriberExceptionHandler;
-    private Pool<Jedis> jedisPool;
+    private RedisClient redisClient;
     private static final Serializer serializer = new JacksonSerializer();
 
     public RedisEventBus(Pool<Jedis> jedisPool) {
@@ -29,29 +28,54 @@ public class RedisEventBus extends AbstractEventBus {
                 jedisPool);
     }
 
-    public RedisEventBus(int thread,  Pool<Jedis> jedisPool) {
+    public RedisEventBus(RedisClient redisClient) {
+        this.redisClient = redisClient;
+    }
+
+    public RedisEventBus(int thread, Pool<Jedis> jedisPool) {
         this(new DefaultSubscriberRegistry(), new ExecutorDispatcher(thread), jedisPool);
     }
 
-    public RedisEventBus(SubscriberRegistry subscriberRegistry, int thread,  Pool<Jedis> jedisPool) {
+    public RedisEventBus(SubscriberRegistry subscriberRegistry, int thread, Pool<Jedis> jedisPool) {
         this(subscriberRegistry, new ExecutorDispatcher(thread), jedisPool);
     }
 
-    public RedisEventBus(SubscriberRegistry subscriberRegistry, Dispatcher dispatcher,  Pool<Jedis> jedisPool) {
+    public RedisEventBus(SubscriberRegistry subscriberRegistry, Dispatcher dispatcher, Pool<Jedis> jedisPool) {
         this.subscriberRegistry = subscriberRegistry;
         this.dispatcher = dispatcher;
-        this.jedisPool = jedisPool;
+        this.redisClient = new JedisPoolClient(jedisPool);
         subscriberRegistry.listen(new RedisSubscribeListener());
         subscriberRegistry.findAllSubscribers(subscribers::add);
-        flushListener();
+        init();
+    }
+
+    public RedisEventBus(SubscriberRegistry subscriberRegistry, int thread, RedisClient redisClient) {
+        this(subscriberRegistry, new ExecutorDispatcher(thread), redisClient);
+    }
+
+    public RedisEventBus(SubscriberRegistry subscriberRegistry, Dispatcher dispatcher, RedisClient redisClient) {
+        this.subscriberRegistry = subscriberRegistry;
+        this.dispatcher = dispatcher;
+        this.redisClient = redisClient;
+        subscriberRegistry.listen(new RedisSubscribeListener());
+        subscriberRegistry.findAllSubscribers(subscribers::add);
+        init();
     }
 
     public void setSubscriberExceptionHandler(SubscriberExceptionHandler subscriberExceptionHandler) {
         this.subscriberExceptionHandler = subscriberExceptionHandler;
     }
 
+    private void init() {
+        flushListener();
+        shutdownHook = new Thread(this::doShutdown);
+        Runtime.getRuntime().addShutdownHook(shutdownHook);
+    }
+
     //handle the register or unRegister
     private ListenThread listenThread;
+
+    private Thread shutdownHook;
 
     private Set<Subscriber> subscribers = new HashSet<>();
 
@@ -120,7 +144,11 @@ public class RedisEventBus extends AbstractEventBus {
 
     private Lock lock = new ReentrantLock();
 
+
     private class ListenThread extends Thread {
+        public ListenThread() {
+            this.setDaemon(true);
+        }
 
         private Lock lock = new ReentrantLock();
         volatile byte[][] listenPatterns;
@@ -174,9 +202,7 @@ public class RedisEventBus extends AbstractEventBus {
 //                    }
                 }
             };
-            try (Jedis jedis = jedisPool.getResource()) {
-                jedis.subscribe(pubSub, listenPatterns);
-            }
+            redisClient.subscribe(pubSub, listenPatterns);
         }
 
         public void waitSubscribe() {
@@ -201,6 +227,19 @@ public class RedisEventBus extends AbstractEventBus {
     }
 
     public void shutdown() {
+        lock.lock();
+        try {
+            doShutdown();
+            if (shutdownHook != null) {
+                Runtime.getRuntime().removeShutdownHook(shutdownHook);
+                shutdownHook = null;
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    private void doShutdown() {
         lock.lock();
         try {
             if (this.listenThread != null) {
@@ -233,8 +272,6 @@ public class RedisEventBus extends AbstractEventBus {
             rawChannel = serializer.serialize(event.getClass().getName());
             rawMessage = serializer.serialize(event);
         }
-        try (Jedis jedis = jedisPool.getResource()) {
-            jedis.publish(rawChannel, rawMessage);
-        }
+        redisClient.publish(rawChannel, rawMessage);
     }
 }
